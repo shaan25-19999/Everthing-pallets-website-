@@ -110,9 +110,12 @@ for (const briq in briquetteLabels) {
  }
 
   locationSelect.addEventListener("change", () => {
-    renderTable(locationSelect.value);
-    updateGraph(locationSelect.value, materialSelect.value);
-  });
+  const location = locationSelect.value;
+  renderTable(location);
+  renderBriquetteTable(location);
+  updateGraph(location, materialSelect.value);
+  updateBriquetteGraph(location, briquetteSelect.value);
+ });
 
   materialSelect.addEventListener("change", () => {
     updateGraph(locationSelect.value, materialSelect.value);
