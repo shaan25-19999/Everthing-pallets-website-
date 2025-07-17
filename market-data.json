@@ -58,10 +58,15 @@
       }
     }
   },
-  "material_labels": {
-    "rice_husk": "Rice Husk Pellets",
-    "mustard_husk": "Mustard Husk Pellets",
-    "coconut_shell": "Coconut Shell Pellets",
-    "wood": "Wood Pellets"
-  }
+ "material_labels": {
+  "rice_husk": "Rice Husk Pellets",
+  "mustard_husk": "Mustard Husk Pellets",
+  "coconut_shell": "Coconut Shell Pellets",
+  "wood": "Wood Pellets"
+},
+"briquette_labels": {
+  "sawdust": "Sawdust Briquettes",
+  "bagasse": "Bagasse Briquettes",
+  "mustard": "Mustard Husk Briquettes"
+}
 }
