@@ -1,0 +1,29 @@
+
+{
+  "locations": {
+    "punjab": {
+      "name": "Punjab",
+      "materials": {
+        "rice_husk": { "price": 7800, "trend": [7500, 7700, 7800] },
+        "mustard_husk": { "price": 7900, "trend": [7600, 7800, 7900] },
+        "coconut_shell": { "price": 8100, "trend": [7900, 8000, 8100] },
+        "wood": { "price": 8250, "trend": [8000, 8150, 8250] }
+      }
+    },
+    "haryana": {
+      "name": "Haryana",
+      "materials": {
+        "rice_husk": { "price": 7650, "trend": [7300, 7500, 7650] },
+        "mustard_husk": { "price": 7700, "trend": [7400, 7600, 7700] },
+        "coconut_shell": { "price": 8000, "trend": [7700, 7850, 8000] },
+        "wood": { "price": 8150, "trend": [7900, 8050, 8150] }
+      }
+    }
+  },
+  "material_labels": {
+    "rice_husk": "Rice Husk Pellets",
+    "mustard_husk": "Mustard Husk Pellets",
+    "coconut_shell": "Coconut Shell Pellets",
+    "wood": "Wood Pellets"
+  }
+}

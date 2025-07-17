@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace – EverythingPallets</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>EverythingPallets Marketplace</h1>
+    <p>Live Pellet Price Intelligence by Location</p>
+  </header>
+
+  <main>
+    <section class="section">
+      <label for="locationSelect"><strong>Select Location:</strong></label>
+      <select id="locationSelect"></select>
+    </section>
+
+    <section class="section">
+      <h3>Pellet Prices (₹/ton)</h3>
+      <table id="materialTable"></table>
+    </section>
+
+    <section class="section">
+      <label for="materialSelect"><strong>Select Material for Price Trend:</strong></label>
+      <select id="materialSelect"></select>
+    </section>
+
+    <section class="section">
+      <h3 id="chartTitle">Price Trend</h3>
+      <canvas id="priceChart" width="400" height="200"></canvas>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
