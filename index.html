@@ -10,44 +10,49 @@
 <body>
   <header>
     <h1>EverythingPallets Marketprice</h1>
-    <p>Live Pellet Price Intelligence by Location</p>
+    <p>Live Pellet & Briquette Price Intelligence by Location</p>
   </header>
-    
-    <nav>
+  
+  <nav>
     <a href="#">Home</a>
     <a href="#">Market Prices</a>
-    <a href="#">news</a>
+    <a href="#">News</a>
     <a href="#">Contact</a>
   </nav>
 
   <main>
+    <!-- Location Dropdown -->
     <section class="section">
       <label for="locationSelect"><strong>Select Location:</strong></label>
       <select id="locationSelect"></select>
     </section>
 
+    <!-- Pellet Table -->
     <section class="section">
       <h3>Pellet Prices (₹/ton)</h3>
       <table id="materialTable"></table>
     </section>
-    
+
+    <!-- Briquette Table -->
     <section class="section">
-  <h3>Briquette Prices (₹/ton)</h3>
-  <table id="briquetteTable"></table>
-</section>
+      <h3>Briquette Prices (₹/ton)</h3>
+      <table id="briquetteTable"></table>
+    </section>
 
-<section class="section">
-  <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
-  <canvas id="briquetteChart" width="400" height="200"></canvas>
-
-      <label for="materialSelect"><strong>Select Material for Price Trend:</strong></label>
+    <!-- Pellet Graph -->
+    <section class="section">
+      <label for="materialSelect"><strong>Select Pellet Type for Price Trend:</strong></label>
       <select id="materialSelect"></select>
-      <br><br>
-      <label for="briquetteSelect"><strong>Select Briquette for Price Trend:</strong></label>
-    
-    <section class="section">
-      <h3 id="chartTitle">Price Trend</h3>
+      <h3 id="chartTitle">Pellet Price Trend</h3>
       <canvas id="priceChart" width="400" height="200"></canvas>
+    </section>
+
+    <!-- Briquette Graph -->
+    <section class="section">
+      <label for="briquetteSelect"><strong>Select Briquette Type for Price Trend:</strong></label>
+      <select id="briquetteSelect"></select>
+      <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
+      <canvas id="briquetteChart" width="400" height="200"></canvas>
     </section>
   </main>
 
