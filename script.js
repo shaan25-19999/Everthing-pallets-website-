@@ -120,6 +120,10 @@ for (const briq in briquetteLabels) {
   materialSelect.addEventListener("change", () => {
     updateGraph(locationSelect.value, materialSelect.value);
   });
+  
+  briquetteSelect.addEventListener("change", () => {
+  updateBriquetteGraph(locationSelect.value, briquetteSelect.value);
+  });
 
   locationSelect.value = Object.keys(locations)[0];
   materialSelect.value = Object.keys(materialLabels)[0];
