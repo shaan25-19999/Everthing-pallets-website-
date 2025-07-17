@@ -6,14 +6,24 @@
   <title>Marketprice – EverythingPallets</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { animation: fadeIn 1s ease-in; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
 </head>
 <body>
-  <header>
+  <header class="sticky-header">
     <h1>EverythingPallets Marketprice</h1>
     <p>Live Pellet & Briquette Price Intelligence by Location</p>
   </header>
-  
-  <nav>
+
+  <nav class="sticky-nav">
     <a href="#">Home</a>
     <a href="#">Market Prices</a>
     <a href="#">News</a>
@@ -21,38 +31,43 @@
   </nav>
 
   <main>
-    <!-- Location Dropdown -->
     <section class="section">
       <label for="locationSelect"><strong>Select Location:</strong></label>
-      <select id="locationSelect"></select>
+      <select id="locationSelect" class="styled-dropdown"></select>
     </section>
 
-    <!-- Pellet Table -->
+    <hr/>
+
     <section class="section">
       <h3>Pellet Prices (₹/ton)</h3>
-      <table id="materialTable"></table>
+      <table id="materialTable" class="hover-table"></table>
     </section>
 
-    <!-- Briquette Table -->
+    <hr/>
+
     <section class="section">
       <h3>Briquette Prices (₹/ton)</h3>
-      <table id="briquetteTable"></table>
+      <table id="briquetteTable" class="hover-table"></table>
     </section>
 
-    <!-- Pellet Graph -->
-    <section class="section">
+    <hr/>
+
+    <section class="section graph-box">
       <label for="materialSelect"><strong>Select Pellet Type for Price Trend:</strong></label>
-      <select id="materialSelect"></select>
+      <select id="materialSelect" class="styled-dropdown"></select>
       <h3 id="chartTitle">Pellet Price Trend</h3>
       <canvas id="priceChart" width="400" height="200"></canvas>
+      <p class="timestamp">Last updated: <span id="pelletTimestamp">--</span></p>
     </section>
 
-    <!-- Briquette Graph -->
-    <section class="section">
+    <hr/>
+
+    <section class="section graph-box">
       <label for="briquetteSelect"><strong>Select Briquette Type for Price Trend:</strong></label>
-      <select id="briquetteSelect"></select>
+      <select id="briquetteSelect" class="styled-dropdown"></select>
       <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
       <canvas id="briquetteChart" width="400" height="200"></canvas>
+      <p class="timestamp">Last updated: <span id="briquetteTimestamp">--</span></p>
     </section>
   </main>
 
