@@ -1,113 +1,83 @@
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f0fdf4;
-  color: #1b4332;
+  background: #f9fefb;
+  color: #102a43;
 }
-
-header, footer {
-  background: #2d6a4f;
+header {
+  background: linear-gradient(to right, #1b4332, #2d6a4f);
   color: white;
+  padding: 1.5rem 0;
   text-align: center;
-  padding: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 nav {
   background: #40916c;
   padding: 1rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-weight: bold;
 }
-
 nav a {
-  margin: 0 15px;
   color: white;
   text-decoration: none;
-  font-weight: bold;
-  transition: color 0.2s ease;
+  position: relative;
 }
-
-nav a:hover {
-  color: #caffbf;
+nav a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: white;
+  bottom: -4px;
+  left: 0;
+  transition: width 0.3s;
 }
-
+nav a:hover::after {
+  width: 100%;
+}
 main {
-  padding: 2rem 1rem;
-  max-width: 1000px;
-  margin: auto;
+  padding: 2rem 5%;
 }
-
-section.section {
+.section {
   margin-bottom: 2rem;
 }
-
-select {
-  font-size: 1rem;
-  margin-top: 1rem;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #b7e4c7;
-  background-color: #ffffff;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
-  background-color: #ffffff;
+  background: #ffffff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
-
 th, td {
+  border: 1px solid #ccc;
   padding: 0.75rem;
   text-align: center;
-  border-bottom: 1px solid #e0f2e9;
 }
-
 th {
-  background-color: #95d5b2;
-  color: #1b4332;
-  font-weight: bold;
+  background: #e6f4ea;
 }
-
-td {
-  background-color: #f0fdf4;
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  margin-top: 0.5rem;
 }
-
 canvas {
-  width: 100% !important;
-  max-width: 700px;
-  margin-top: 1rem;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-
-.cta {
-  background: #d8f3dc;
+footer {
+  background: #2d6a4f;
+  color: white;
   text-align: center;
   padding: 1rem;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-@media (max-width: 768px) {
-  nav {
-    padding: 0.8rem;
-  }
-
-  nav a {
-    display: inline-block;
-    margin: 0.5rem;
-  }
-
-  canvas {
-    max-width: 100%;
-  }
-
-  table, th, td {
-    font-size: 0.9rem;
-  }
+  margin-top: 2rem;
 }
