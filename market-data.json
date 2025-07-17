@@ -4,10 +4,10 @@
     "punjab": {
       "name": "Punjab",
       "materials": {
-        "rice_husk": { "price": 7800, "trend": [7500, 7700, 7800] },
-        "mustard_husk": { "price": 7900, "trend": [7600, 7800, 7900] },
-        "coconut_shell": { "price": 8100, "trend": [7900, 8000, 8100] },
-        "wood": { "price": 8250, "trend": [8000, 8150, 8250] }
+        "rice_husk": { "price": 8000, "trend": [7500, 7700, 7800,8000] },
+        "mustard_husk": { "price": 8100, "trend": [7600, 7800, 7900,8100] },
+        "coconut_shell": { "price": 8700, "trend": [7900, 8000, 8100,8700] },
+        "wood": { "price": 8500, "trend": [8000, 8150, 8250,8500] }
       }
     },
     "up": {
