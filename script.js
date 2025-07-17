@@ -27,11 +27,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     option.value = mat;
     option.text = materialLabels[mat];
     materialSelect.appendChild(option);
-    const briquetteLabels = {
+  }
+  const briquetteLabels = {
   sawdust: "Sawdust Briquettes",
   bagasse: "Bagasse Briquettes",
   mustard: "Mustard Husk Briquettes"
- };
+  };
+
  
  const briquetteSelect = document.getElementById("briquetteSelect");
 
