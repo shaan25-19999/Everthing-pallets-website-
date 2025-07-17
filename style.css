@@ -83,7 +83,7 @@ th {
 }
 
 tr:hover {
-  background: #F3F9F9;
+  background: #EAF6F6; /* Softer, elegant hover */
 }
 
 select {
@@ -107,8 +107,8 @@ select {
 }
 
 select:focus {
-  border-color: #1C3D5A;
-  box-shadow: 0 0 0 3px rgba(28, 61, 90, 0.2);
+  border-color: #D4AF37; /* Muted gold accent */
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
   outline: none;
 }
 
@@ -125,12 +125,25 @@ canvas:hover {
   box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
+/* OPTIONAL: Chart bar color override (for Chart.js or inline SVGs) */
+.chart-bar {
+  background-color: #66A5AD !important;
+}
+
 footer {
   background: #1C3D5A;
   color: white;
   text-align: center;
   padding: 1rem;
   margin-top: 2rem;
+}
+
+.last-updated {
+  color: #888888;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: right;
+  font-style: italic;
 }
 
 /* 🔥 Tooltip styling for graph hover */
