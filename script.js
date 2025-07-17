@@ -99,6 +99,15 @@ for (const briq in briquetteLabels) {
     chartTitle.textContent = `Price trend of ${materialLabels[materialKey]} in ${locations[locationKey].name}`;
     chart.update();
   }
+  
+  function updateBriquetteGraph(locationKey, briquetteKey) {
+  const trend = locations[locationKey].materials.briquettes[briquetteKey].trend;
+  briquetteChart.data.datasets[0].label = `${briquetteLabels[briquetteKey]}`;
+  briquetteChart.data.datasets[0].data = trend;
+  document.getElementById("briquetteChartTitle").textContent = 
+    `Price trend of ${briquetteLabels[briquetteKey]} in ${locations[locationKey].name}`;
+  briquetteChart.update();
+ }
 
   locationSelect.addEventListener("change", () => {
     renderTable(locationSelect.value);
