@@ -20,22 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const briquetteLabels = dataset.briquette_labels;
 
   // Populate location dropdown
-  const locationButtons = document.getElementById("locationButtons");
-
-for (const loc in locations) {
-  const btn = document.createElement("button");
-  btn.textContent = locations[loc].name;
-  btn.classList.add("location-btn");
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".location-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentLocation = loc;
-    renderTable(currentLocation);
-    renderBriquetteTable(currentLocation);
-    updateGraph(currentLocation, materialSelect.value);
-    updateBriquetteGraph(currentLocation, briquetteSelect.value);
-  });
-  locationButtons.appendChild(btn);
+  for (const loc in locations) {
+  const option = document.createElement("option");
+  option.value = loc;
+  option.text = locations[loc].name;
+  locationSelect.appendChild(option);
 }
 
   // Populate material dropdown
