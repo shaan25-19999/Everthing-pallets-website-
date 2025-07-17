@@ -3,7 +3,12 @@
   "locations": {
     "punjab": {
       "name": "Punjab",
-      "materials": {
+      "materials": { ,
+"briquettes": {
+  "sawdust": { "price": 7300, "trend": [7000, 7200, 7250, 7300] },
+  "bagasse": { "price": 7100, "trend": [6800, 6900, 7000, 7100] },
+  "mustard": { "price": 7400, "trend": [7100, 7250, 7300, 7400] }
+}
         "rice_husk": { "price": 8000, "trend": [7500, 7700, 7800,8000] },
         "mustard_husk": { "price": 8100, "trend": [7600, 7800, 7900,8100] },
         "coconut_shell": { "price": 8700, "trend": [7900, 8000, 8100,8700] },
