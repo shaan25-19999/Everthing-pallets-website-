@@ -32,6 +32,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   bagasse: "Bagasse Briquettes",
   mustard: "Mustard Husk Briquettes"
  };
+ 
+ const briquetteSelect = document.getElementById("briquetteSelect");
+
+for (const briq in briquetteLabels) {
+  const option = document.createElement("option");
+  option.value = briq;
+  option.text = briquetteLabels[briq];
+  briquetteSelect.appendChild(option);
+ }
+
   
 
   const chart = new Chart(ctx, {
