@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     option.text = materialLabels[mat];
     materialSelect.appendChild(option);
   }
-
   // Populate briquette dropdown
   for (const briq in briquetteLabels) {
     const option = document.createElement("option");
