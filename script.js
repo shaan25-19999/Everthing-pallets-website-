@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const materialTable = document.getElementById("materialTable");
   const chartTitle = document.getElementById("chartTitle");
   const ctx = document.getElementById("priceChart").getContext("2d");
-
+  const briquetteCtx = document.getElementById("briquetteChart").getContext("2d");
   const dataset = await loadData();
   const locations = dataset.locations;
   const materialLabels = dataset.material_labels;
@@ -27,7 +27,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     option.value = mat;
     option.text = materialLabels[mat];
     materialSelect.appendChild(option);
-  }
+    const briquetteLabels = {
+  sawdust: "Sawdust Briquettes",
+  bagasse: "Bagasse Briquettes",
+  mustard: "Mustard Husk Briquettes"
+ };
+  
 
   const chart = new Chart(ctx, {
     type: 'line',
@@ -42,6 +47,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     options: { responsive: true }
   });
+  
+  const briquetteChart = new Chart(briquetteCtx, {
+  type: 'line',
+  data: {
+    labels: ['YEAR', '6 MONTHS', 'MONTH', 'WEEK'],
+    datasets: [{
+      label: '',
+      data: [],
+      borderColor: '#6a4f2d',
+      fill: false
+    }]
+  },
+  options: { responsive: true }
+  });
 
   function renderTable(locationKey) {
     const materials = locations[locationKey].materials;
@@ -51,7 +70,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         `<tr><td>${materialLabels[mat]}</td><td>${obj.price}</td></tr>`
       ).join("")}
     `;
-  }
+  } 
+  function renderBriquetteTable(locationKey) {
+  const briquettes = locations[locationKey].materials.briquettes;
+  const briquetteTable = document.getElementById("briquetteTable");
+  briquetteTable.innerHTML = `
+    <tr><th>Briquette Type</th><th>Price (₹/ton)</th></tr>
+    ${Object.entries(briquettes).map(([type, obj]) =>
+      `<tr><td>${briquetteLabels[type]}</td><td>${obj.price}</td></tr>`
+    ).join("")}
+  `;
+ }
 
   function updateGraph(locationKey, materialKey) {
     const trend = locations[locationKey].materials[materialKey].trend;
