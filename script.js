@@ -128,5 +128,7 @@ for (const briq in briquetteLabels) {
   locationSelect.value = Object.keys(locations)[0];
   materialSelect.value = Object.keys(materialLabels)[0];
   renderTable(locationSelect.value);
-  updateGraph(locationSelect.value, materialSelect.value);
+renderBriquetteTable(locationSelect.value);
+updateGraph(locationSelect.value, materialSelect.value);
+updateBriquetteGraph(locationSelect.value, briquetteSelect.value);
 });
