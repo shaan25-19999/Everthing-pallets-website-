@@ -4,6 +4,11 @@
     "punjab": {
       "name": "Punjab",
       "materials": {
+        "briquettes": {
+  "sawdust": { "price": 7300, "trend": [7000, 7200, 7250, 7300] },
+  "bagasse": { "price": 7100, "trend": [6800, 6900, 7000, 7100] },
+  "mustard": { "price": 7400, "trend": [7100, 7250, 7300, 7400] }
+        }
         "rice_husk": { "price": 8000, "trend": [7500, 7700, 7800,8000] },
         "mustard_husk": { "price": 8100, "trend": [7600, 7800, 7900,8100] },
         "coconut_shell": { "price": 8700, "trend": [7900, 8000, 8100,8700] },
@@ -13,6 +18,11 @@
     "up": {
       "name": "up",
       "materials": {
+        "briquettes": {
+  "sawdust": { "price": 7204, "trend": [6900, 7000, 7100, 7204] },
+  "bagasse": { "price": 7055, "trend": [6700, 6800, 6900, 7055] },
+  "mustard": { "price": 7355, "trend": [7000, 7150, 7250, 7355] }
+}
         "rice_husk": { "price": 7850, "trend": [7500, 7700, 7800,7850] },
         "mustard_husk": { "price": 7950, "trend": [7600, 7800, 7900,7950] },
         "coconut_shell": { "price": 8150, "trend": [7900, 8000, 8100,8150] },
@@ -22,6 +32,11 @@
     "haryana": {
       "name": "Haryana",
       "materials": {
+        "briquettes": {
+  "sawdust": { "price": 7200, "trend": [6900, 7000, 7100, 7200] },
+  "bagasse": { "price": 7050, "trend": [6700, 6800, 6900, 7050] },
+  "mustard": { "price": 7350, "trend": [7000, 7150, 7250, 7350] }
+}
         "rice_husk": { "price": 7750, "trend": [7300, 7500, 7650, 7750] },
         "mustard_husk": { "price": 7900, "trend": [7400, 7600, 7700,7900] },
         "coconut_shell": { "price": 8200, "trend": [7700, 7850, 8000, 8200] },
@@ -31,6 +46,11 @@
     "rajasthan": {
       "name": "rajasthan",
       "materials": {
+        "briquettes": {
+  "sawdust": { "price": 7207, "trend": [6900, 7000, 7100, 7207] },
+  "bagasse": { "price": 7058, "trend": [6700, 6800, 6900, 7058] },
+  "mustard": { "price": 7358, "trend": [7000, 7150, 7250, 7358] }
+}
         "rice_husk": { "price": 7700, "trend": [7300, 7500, 7650,7000] },
         "mustard_husk": { "price": 7750, "trend": [7400, 7600, 7700,7750] },
         "coconut_shell": { "price": 8050, "trend": [7700, 7850, 8000,8050] },
