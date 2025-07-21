@@ -1,65 +1,77 @@
+/* GLOBAL BASE */
+* {
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   background: #F9F9F9;
-  color: #333333;
-  transition: background-color 0.3s ease;
+  color: #1C3D5A;
 }
 
+/* HEADER */
 header {
   background: linear-gradient(to right, #1C3D5A, #66A5AD);
   color: white;
-  padding: 1.5rem 0;
+  padding: 2rem 1rem;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   animation: fadeIn 1s ease-in-out;
 }
+header h1 {
+  font-size: 2rem;
+  margin: 0;
+}
 
+/* NAVIGATION */
 nav {
-  background: #66A5AD;
+  background: #EAF6F6;
   padding: 1rem;
   display: flex;
   justify-content: center;
   gap: 2rem;
-  font-weight: bold;
+  font-weight: 600;
 }
-
 nav a {
-  color: white;
+  color: #1C3D5A;
   text-decoration: none;
   position: relative;
 }
-
 nav a::after {
   content: '';
   position: absolute;
   width: 0%;
   height: 2px;
-  background: white;
+  background: #66A5AD;
   bottom: -4px;
   left: 0;
-  transition: width 0.3s;
+  transition: width 0.3s ease;
 }
-
 nav a:hover::after {
   width: 100%;
 }
+nav a:hover {
+  color: #168aad;
+}
 
+/* MAIN CONTENT */
 main {
-  padding: 2rem 5%;
+  padding: 2.5rem 5%;
   animation: fadeIn 0.8s ease-in-out;
 }
 
+/* SECTION BLOCK */
 .section {
   margin-bottom: 2.5rem;
   transition: all 0.3s ease-in-out;
 }
-
 .section:hover {
   transform: translateY(-3px);
 }
 
+/* TABLE STYLING */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -69,23 +81,22 @@ table {
   overflow: hidden;
   box-shadow: 0 0 15px rgba(0,0,0,0.05);
 }
-
 th, td {
   border: 1px solid #eee;
   padding: 0.8rem;
   text-align: center;
   transition: background-color 0.3s ease;
 }
-
 th {
   background: #E0F1F1;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1rem;
 }
-
 tr:hover {
-  background: #EAF6F6; /* Softer, elegant hover */
+  background: #F2FAFA;
 }
 
+/* SELECT DROPDOWN */
 select {
   padding: 0.6rem 1rem;
   font-size: 1rem;
@@ -95,9 +106,6 @@ select {
   color: #1C3D5A;
   font-weight: 500;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  margin-top: 0.75rem;
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231C3D5A' stroke-width='2' fill='none'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
@@ -105,13 +113,13 @@ select {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 select:focus {
-  border-color: #D4AF37; /* Muted gold accent */
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
   outline: none;
 }
 
+/* GRAPH CANVAS BOX */
 canvas {
   background: white;
   border-radius: 12px;
@@ -120,24 +128,26 @@ canvas {
   margin-top: 1rem;
   transition: box-shadow 0.3s ease;
 }
-
 canvas:hover {
   box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
-/* OPTIONAL: Chart bar color override (for Chart.js or inline SVGs) */
+/* Optional chart bar styling */
 .chart-bar {
   background-color: #66A5AD !important;
 }
 
+/* FOOTER */
 footer {
-  background: #1C3D5A;
+  background: linear-gradient(to right, #1C3D5A, #66A5AD);
   color: white;
   text-align: center;
-  padding: 1rem;
+  padding: 1.5rem;
   margin-top: 2rem;
+  font-size: 0.9rem;
 }
 
+/* LAST UPDATED TIMESTAMP */
 .last-updated {
   color: #888888;
   font-size: 0.9rem;
@@ -146,7 +156,7 @@ footer {
   font-style: italic;
 }
 
-/* 🔥 Tooltip styling for graph hover */
+/* TOOLTIP */
 .chartjs-tooltip {
   font-size: 0.85rem;
   background: rgba(0, 0, 0, 0.75);
@@ -157,7 +167,7 @@ footer {
   transition: all 0.2s ease;
 }
 
-/* ✨ Entry animations */
+/* FADE-IN ANIMATION */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
