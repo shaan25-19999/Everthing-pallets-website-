@@ -188,8 +188,11 @@ footer {
   margin-bottom: 1rem;
 }
 .market-logo {
-  max-width: 170px;
-  width: 100%;
+  width: 160px;
+  max-width: 90%;
   height: auto;
-  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
