@@ -1,204 +1,231 @@
-/* =======================================================
-   Market.css — Premium UI for Market Prices (Peltra)
-   Palette: ink #1C3D5A, teal #66A5AD, bg #F9F9F9, border #D3E3EC
-   ======================================================= */
+/* =========================
+   Market.css – EverythingPallets
+   Clean, premium UI for Market Prices page
+   ========================= */
 
+/* Base */
 * { box-sizing: border-box; }
 :root{
-  --ink:#1C3D5A; --teal:#66A5AD; --bg:#F9F9F9; --border:#D3E3EC; --muted:#6b7b8c; --card:#fff;
-  --shadow:0 8px 24px rgba(21, 40, 64, .08);
-  --shadow-soft:0 4px 12px rgba(21, 40, 64, .06);
+  --ink:#1C3D5A;
+  --ink-2:#335b7a;
+  --brand:#66A5AD;
+  --brand-2:#4f8e96;
+  --bg:#F9F9F9;
+  --card:#ffffff;
+  --muted:#6c7a86;
+  --line:#E6EDF2;
+  --accent:#D4AF37;
+  --ok:#2e7d32;
+  --warn:#bc4749;
+  --briq:#8b5e34;
+  --pellet:#2a7886;
+  --chip:#eef6f7;
+  --shadow:0 10px 24px rgba(28,61,90,.06), 0 2px 6px rgba(28,61,90,.06);
   --radius:14px;
 }
-html,body{ margin:0; background:var(--bg); color:var(--ink);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--ink);text-decoration:none}
+.small{font-size:.9rem}
+.tiny{font-size:.82rem}
+.muted{color:var(--muted)}
+.accent{color:var(--accent)}
+.badge{background:#eef3f7;border:1px solid var(--line);padding:.2rem .6rem;border-radius:999px;font-size:.8rem;color:var(--ink-2)}
 
-/* ---------- Header ---------- */
+/* Header */
 .sticky-header{
-  text-align:center; color:#fff;
-  background: linear-gradient(90deg, var(--ink), var(--teal));
-  padding: 2.2rem 1rem 1.8rem;
-  position: relative;
-  box-shadow: var(--shadow);
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(90deg, var(--ink) 0%, var(--brand) 100%);
+  color:#fff;text-align:center;padding:1.8rem 1rem 1.2rem;
+  box-shadow:var(--shadow)
 }
-.market-logo-container{ margin-bottom:.8rem; }
-.market-logo{ width:132px; max-width:32vw; height:auto; display:block; margin:0 auto .35rem; }
-.sticky-header h1{ margin:.1rem 0 .25rem; font-weight:800; letter-spacing:.2px; }
-.sticky-header p{ margin:0; opacity:.95; font-weight:500; }
+.market-logo-container{display:flex;justify-content:center;margin-bottom:.6rem}
+.market-logo{width:130px;max-width:80%;height:auto;filter:drop-shadow(0 6px 20px rgba(0,0,0,.15))}
+.page-title{margin:.2rem 0 0;font-size:2rem;letter-spacing:.2px}
+.page-subtitle{margin:.25rem 0 0;opacity:.9}
 
-/* ---------- Nav ---------- */
+/* Nav */
 .sticky-nav{
-  display:flex; gap:1.25rem; justify-content:center; align-items:center;
-  padding: .9rem 1rem; background:#EAF6F6; position:sticky; top:0; z-index:20;
-  border-bottom:1px solid var(--border);
+  position:sticky;top:88px;z-index:19;
+  display:flex;gap:2rem;justify-content:center;align-items:center;
+  background:#EAF6F6;border-bottom:1px solid var(--line);padding:.9rem 1rem
 }
 .sticky-nav a{
-  color:var(--ink); text-decoration:none; font-weight:700; letter-spacing:.2px;
-  padding:.4rem .6rem; border-radius:10px; position:relative;
+  font-weight:600;position:relative;padding:.25rem 0;color:var(--ink)
 }
+.sticky-nav a[aria-current="page"]{color:var(--brand-2)}
 .sticky-nav a::after{
-  content:""; position:absolute; left:.6rem; right:.6rem; bottom:.25rem; height:2px;
-  background:transparent; transition: background .25s, transform .25s; transform:scaleX(0);
+  content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--brand);
+  transition:width .25s ease
 }
-.sticky-nav a:hover{ color:#168aad; background:#ffffff; }
-.sticky-nav a:hover::after{ background:#66A5AD; transform:scaleX(1); }
-.sticky-nav a.active{ color:#168aad; }
+.sticky-nav a:hover::after{width:100%}
 
-/* ---------- Layout ---------- */
-.container{ max-width:1180px; margin:0 auto; padding:1.6rem 1rem 2.4rem; }
-.section{ margin:1.8rem 0 2.2rem; }
-.section > h2{ margin:.2rem 0 1rem; letter-spacing:.3px; }
+/* Main layout */
+main{max-width:1180px;margin:0 auto;padding:2rem 20px 3rem}
+.section{background:transparent;margin:1.4rem 0 2rem}
+.section-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem}
+.section h2{margin:0}
+.filters{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 1rem}
 
-/* ---------- Controls ---------- */
-.controls{
-  display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap:1rem; align-items:end; margin:1rem 0 1.2rem;
-}
-.control-row{ display:flex; flex-direction:column; gap:.45rem; }
-label{ font-weight:700; font-size:.95rem; }
-select, input[type="number"], input[type="text"]{
-  padding:.68rem .85rem; border:1px solid var(--teal); border-radius:12px;
-  background:#fff; color:var(--ink); box-shadow: var(--shadow-soft);
-  outline:none; transition: border-color .2s, box-shadow .2s, transform .05s;
-}
-select:focus, input:focus{
-  border-color:#2d8fa0; box-shadow: 0 0 0 4px rgba(102,165,173,.18);
-}
-select:hover, input:hover{ transform: translateY(-1px); }
-
-.styled-dropdown{ appearance:none; background-image:
-  linear-gradient(45deg, transparent 50%, #1C3D5A 50%),
-  linear-gradient(135deg, #1C3D5A 50%, transparent 50%),
-  linear-gradient(to right, transparent, transparent);
-  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px), 100% 0;
-  background-size: 5px 5px, 5px 5px, 2.4em 2.4em;
-  background-repeat: no-repeat;
-}
-
-.last-updated{ grid-column:1/-1; text-align:right; color:var(--muted); font-size:.92rem; }
-
-/* ---------- Tables ---------- */
-.hover-table{
-  width:100%; border-collapse:collapse; background:var(--card);
-  border:1px solid var(--border); border-radius: var(--radius); overflow:hidden;
-  box-shadow: var(--shadow);
-}
-.hover-table th, .hover-table td{
-  padding:.9rem .8rem; border-bottom:1px solid #eef2f5; text-align:center;
-}
-.hover-table th{
-  background:#E0F1F1; font-weight:800; letter-spacing:.3px; color:#11324a;
-}
-.hover-table tr:hover{ background:#F5FBFB; }
-
-/* ---------- Graphs ---------- */
-.graphs{
-  display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap:1.25rem;
-}
-.graph-box{
-  background:var(--card); border:1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding:1rem 1rem 1.2rem; position:relative; overflow:hidden;
-}
-.graph-box h3{ margin:.2rem 0 .5rem; }
-.graph-box canvas{ width:100% !important; max-height:320px; min-height:240px; display:block; }
-.timestamp{ color:var(--muted); font-size:.9rem; margin:.4rem 0 0; }
-
-/* ---------- Tools ---------- */
-.tools-grid{
-  display:grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-  gap:1.2rem;
-}
+/* Cards & panels */
 .card{
-  background:var(--card); border:1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding:1rem 1.1rem;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.2rem 1.2rem 1rem;box-shadow:var(--shadow)
 }
-.card h3{ margin:.1rem 0 1rem; font-weight:800; }
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem}
+.panel.highlight{background:linear-gradient(180deg,#f8fbfc 0%,#ffffff 100%);border-color:#dfe9ee}
 
-.form-grid{
-  display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:.8rem 1rem;
+/* Tables */
+.table-scroll{overflow:auto}
+.hover-table{
+  width:100%;border-collapse:collapse;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  box-shadow:var(--shadow)
 }
-.form-grid .input-group{ display:flex; flex-direction:column; gap:.35rem; }
+.hover-table thead th{
+  background:#E0F1F1;color:#133246;text-align:left;font-weight:700;padding:.9rem .9rem;
+  font-size:.95rem;border-bottom:1px solid var(--line)
+}
+.hover-table tbody td{
+  padding:.8rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle
+}
+.hover-table tbody tr:hover{background:#F5FAFB}
+.hover-table.compact tbody td{padding:.65rem .75rem}
 
-.muted{ color:var(--muted); font-size:.92rem; }
-.center{ text-align:center; }
+/* Sparklines */
+.sparkline{display:flex;align-items:flex-end;gap:3px;height:38px}
+.spark{
+  width:6px;border-radius:3px;background:#58b5c0;opacity:.9
+}
+.spark.briq{background:var(--briq)}
 
-.actions{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.25rem; }
+/* Dropdowns & inputs */
+.styled-dropdown,
+input[type="text"],
+input[type="number"],
+select{
+  font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:.6rem .8rem;outline:none;min-width:180px
+}
+.styled-dropdown:focus,
+input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(102,165,173,.15)}
+label{font-weight:600;color:var(--ink);display:inline-block;margin-bottom:.35rem}
+
+/* Grid helpers */
+.grid{display:grid;gap:1rem}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stack-sm{gap:1.2rem}
+@media (max-width: 840px){
+  .grid-2{grid-template-columns:1fr}
+}
+
+/* Buttons */
 .btn{
-  background:var(--teal); color:#fff; border:none; border-radius:12px;
-  padding:.65rem .95rem; cursor:pointer; font-weight:800;
-  box-shadow: var(--shadow-soft);
-  transition: transform .08s ease, filter .2s ease;
+  --btn-bg:#f0f6f8;--btn-bd:var(--line);--btn-fg:var(--ink);
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  border:1px solid var(--btn-bd);background:var(--btn-bg);color:var(--btn-fg);
+  border-radius:10px;padding:.6rem 1rem;font-weight:600;cursor:pointer;transition:all .2s ease
 }
-.btn:hover{ filter:brightness(.97); transform: translateY(-1px); }
-.btn:active{ transform: translateY(0); }
-.btn.ghost{ background:#fff; color:var(--ink); border:1px solid var(--teal); }
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn.primary{--btn-bg:linear-gradient(90deg,var(--ink) 0%, var(--brand) 100%);--btn-bd:transparent;--btn-fg:#fff}
+.btn.ghost{--btn-bg:#fff}
+.btn.whats{--btn-bg:#e9f7ef;--btn-bd:#cfe9d7;--btn-fg:#1b5e20}
+.btn.big{padding:.85rem 1.2rem;font-size:1.02rem}
 
-.result{
-  display:flex; flex-wrap:wrap; gap:1rem; margin-top:.8rem;
-  padding:.7rem .9rem; background:#F2FAFA; border:1px dashed var(--teal);
-  border-radius:12px; font-weight:700;
+/* Forms */
+.form-field{display:flex;flex-direction:column}
+.form-actions{display:flex;gap:.6rem;align-items:center;margin-top:.4rem}
+.form-actions.right{justify-content:flex-end}
+
+/* Results (Freight) */
+.result-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;margin-top:1rem
+}
+.result-box{
+  background:#fbfdfe;border:1px dashed var(--line);border-radius:10px;padding:.8rem .9rem
+}
+.result-label{font-size:.85rem;color:var(--muted)}
+.result-value{display:block;margin-top:.2rem;font-weight:800;font-size:1.1rem;color:var(--ink)}
+.result-value.accent{color:var(--ok)}
+@media (max-width: 720px){
+  .result-grid{grid-template-columns:1fr 1fr}
 }
 
-/* Fuel Comparison table */
-.compare-table{
-  width:100%; border-collapse:collapse; background:#fff;
-  border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow: var(--shadow-soft);
-}
-.compare-table th, .compare-table td{ padding:.7rem .65rem; border-bottom:1px solid #eef2f5; text-align:center; }
-.compare-table th{ background:#E0F1F1; font-weight:800; }
-.compare-table input{
-  width:100%; text-align:center; padding:.55rem .6rem;
-  border:1px solid #e6eef3; border-radius:10px; background:#fbfeff;
-}
-.bestBadge{
-  margin-top:.65rem; padding:.55rem .85rem; background:#EAF6F6; border:1px solid var(--teal);
-  border-radius:10px; display:inline-block; opacity:0; transform: translateY(4px);
-  transition: opacity .2s, transform .2s;
-}
-.bestBadge.show{ opacity:1; transform: translateY(0); }
+/* CTA group (leads panel) */
+.cta-buttons{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.2rem}
 
-/* ---------- Footer ---------- */
+/* Chips / tags */
+.chip{
+  display:inline-flex;align-items:center;gap:.35rem;
+  background:var(--chip);color:var(--ink-2);
+  border:1px solid #d7e8ea;border-radius:999px;padding:.25rem .55rem;font-size:.8rem
+}
+.chip.primary{background:#deeff2;border-color:#cbe2e6}
+.good{color:var(--ok);font-weight:700}
+
+/* Graph boxes */
+.graph-box{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem 1rem 1.2rem;box-shadow:var(--shadow)
+}
+.chart-header{display:flex;justify-content:flex-start;align-items:center;gap:.6rem;margin-bottom:.6rem}
+canvas{
+  background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:12px;margin-top:.4rem
+}
+
+/* Badges, timestamps */
+.timestamp{margin:.4rem 0 0;font-size:.88rem;color:var(--muted)}
+
+/* Footer */
 .footer{
-  background: linear-gradient(90deg, var(--ink), var(--teal));
-  color:#fff; text-align:center; padding:1.25rem; margin-top:2rem;
-  border-top:1px solid rgba(255,255,255,.12);
+  margin-top:2rem;background:linear-gradient(90deg,var(--ink) 0%, var(--brand) 100%);
+  color:#eaf6f6;text-align:center;padding:1.3rem;border-top:1px solid #dbe7ee
 }
 
-/* ---------- Micro-interactions ---------- */
-.card, .graph-box, .hover-table{ transition: transform .18s ease, box-shadow .18s ease; }
-.card:hover, .graph-box:hover{ transform: translateY(-2px); box-shadow: 0 12px 26px rgba(21,40,64,.10); }
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section, .card, .panel, .graph-box{animation:fadeInUp .35s ease both}
 
-/* ---------- Responsive tweaks ---------- */
-@media (max-width: 880px){
-  .form-grid{ grid-template-columns: 1fr; }
-  .sticky-header{ padding: 2rem 1rem 1.4rem; }
-  .market-logo{ width:120px; }
-}
+/* Accessibility states */
+:focus-visible{outline:3px solid rgba(102,165,173,.35);outline-offset:2px}
+
+/* Utility for long tables on small screens */
 @media (max-width: 560px){
-  .market-logo{ width:108px; }
-  .sticky-nav{ gap:.8rem; flex-wrap:wrap; }
-  .controls{ gap:.8rem; }
-  .graph-box canvas{ max-height:260px; min-height:200px; }
+  .hover-table thead{display:none}
+  .hover-table tr{display:grid;grid-template-columns:1fr;gap:.25rem;border-bottom:1px solid var(--line);padding:.65rem}
+  .hover-table td{border:none;text-align:left;padding:.25rem 0}
+  .hover-table td strong{display:inline-block;margin-top:.1rem}
+  .sparkline{height:30px}
 }
 
-/* ---------- Focus visible for accessibility ---------- */
-:focus-visible{
-  outline: 3px solid rgba(102,165,173,.35);
-  outline-offset: 2px;
-  border-radius: 8px;
-}
+/* ====== Extras tuned for this page ====== */
 
-/* ---------- Optional dark mode (prefers-color-scheme) ---------- */
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#0f1722; --ink:#E6EEF6; --border:#1f2a36; --card:#0f1b27; --muted:#9fb0c3; }
-  .sticky-nav{ background:#0d2b2b; border-bottom:1px solid var(--border); }
-  .hover-table th{ background:#123c45; color:#dff4f6; }
-  .hover-table, .card, .graph-box{ border-color:#203242; }
-  .compare-table th{ background:#123c45; color:#dff4f6; }
-  select, input{ background:#0b1520; color:var(--ink); border-color:#2a4c58; }
-  .result{ background:#0e2a2a; border-color:#2a6969; }
-  .bestBadge{ background:#103a3a; border-color:#2a6969; }
+/* subtle card lift on hover without jitter */
+.card:hover, .panel:hover, .graph-box:hover{transform:translateY(-2px)}
+
+/* ensure select widths behave nicely */
+.styled-dropdown{min-width:220px}
+
+/* make tables scroll on small screens smoothly */
+.table-scroll::-webkit-scrollbar{height:10px}
+.table-scroll::-webkit-scrollbar-thumb{background:#cfe0e5;border-radius:999px}
+.table-scroll::-webkit-scrollbar-track{background:#f3f7f9}
+
+/* WhatsApp + Call buttons inside highlight panel */
+.panel.highlight .btn.primary{box-shadow:0 8px 18px rgba(28,61,90,.18)}
+.panel.highlight .btn.whats{box-shadow:0 8px 18px rgba(27,94,32,.12)}
+
+/* Inputs in comparison table */
+#fuelCompareTable input.cell{
+  width:120px;max-width:100%;text-align:right;border-radius:8px;border:1px solid var(--line);
+  padding:.45rem .55rem;background:#fff
 }
+#fuelCompareTable td.cpmk{font-weight:700}
+#fuelCompareTable td.best{width:90px}
+
+/* Fine tune titles */
+h1,h2,h3{letter-spacing:.2px}
+h3{margin:0 0 .4rem}
+
+/* Keep long labels from breaking layout */
+label,strong{word-break:keep-all;white-space:nowrap}
