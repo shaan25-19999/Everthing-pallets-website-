@@ -1,41 +1,57 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Marketprice - everythingpallets</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ SEO Meta Tags -->
+  <title>Biomass Market Prices in India – Pellets & Briquettes | EverythingPellets</title>
+  <meta name="description" content="View live biomass fuel prices including 8mm pellets and 90mm briquettes across India. Track price trends by location, material type, and quality specs.">
+  <meta name="keywords" content="biomass prices, pellet rates, briquette market, 8mm pellets, 90mm briquettes, biomass fuel India, renewable energy prices, market trend biomass">
+  <meta name="author" content="EverythingPellets">
+
+  <!-- ✅ Canonical URL -->
+  <link rel="canonical" href="https://everythingpellets.com/market.html" />
+
+  <!-- ✅ Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="Live Biomass Pellet & Briquette Prices in India – EverythingPellets">
+  <meta property="og:description" content="Compare prices of 8mm pellets and 90mm briquettes by state and material type. See price trends and quality insights.">
+  <meta property="og:image" content="https://everythingpellets.com/assets/preview.jpg"> <!-- 🔁 Replace if needed -->
+  <meta property="og:url" content="https://everythingpellets.com/market.html">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+  <!-- ✅ Styles & Scripts -->
+  <link rel="stylesheet" href="style/market.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { animation: fadeIn 1s ease-in; }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    html {
-      scroll-behavior: smooth;
-    }
-  </style>
+
 </head>
 <body>
 
+  <!-- ✅ HEADER WITH LOGO AND TITLE -->
   <header class="sticky-header">
-    <!-- ✅ LOGO FIRST -->
     <div class="market-logo-container">
-     <img src="Logo.png" alt="EverythingPallets Logo" class="market-logo" />
+      <img src="assets/Logo.png" alt="EverythingPellets Logo" class="market-logo" />
     </div>
-
-    <h1>Marketprice</h1>
+    <h1>Market Prices</h1>
     <p>Live Pellet & Briquette Price Intelligence by Location</p>
   </header>
 
+  <!-- ✅ NAVIGATION -->
   <nav class="sticky-nav">
-    <a href="#">Home</a>
-    <a href="#">Market Prices</a>
-    <a href="#">News</a>
-    <a href="#">Contact</a>
+    <a href="index.html">Home</a>
+    <a href="market.html">Market Prices</a>
+    <a href="news.html">News</a>
+    <a href="contact.html">Contact</a>
   </nav>
 
+  <!-- ✅ MAIN CONTENT -->
   <main>
     <section class="section">
       <label for="locationSelect"><strong>Select Location:</strong></label>
@@ -45,42 +61,60 @@
     <hr/>
 
     <section class="section">
-      <h3>Pellet Prices (₹/ton)</h3>
+      <h3>Pellet Prices (₹/ton) (8mm)</h3>
       <table id="materialTable" class="hover-table"></table>
     </section>
 
     <hr/>
 
     <section class="section">
-      <h3>Briquette Prices (₹/ton)</h3>
+      <h3>Briquette Prices (₹/ton) (90mm)</h3>
       <table id="briquetteTable" class="hover-table"></table>
     </section>
 
     <hr/>
 
+    <!-- ✅ Pellet Graph Section -->
     <section class="section graph-box">
       <label for="materialSelect"><strong>Select Pellet Type for Price Trend:</strong></label>
       <select id="materialSelect" class="styled-dropdown"></select>
-      <h3 id="chartTitle">Pellet Price Trend</h3>
+
+      <div class="specs" id="pelletSpecs">
+        <p><strong>Ash:</strong> <span id="pelletAsh">--</span></p>
+        <p><strong>Moisture:</strong> <span id="pelletMoisture">--</span></p>
+        <p><strong>Kcal Value:</strong> <span id="pelletKcal">--</span></p>
+      </div>
+
+      <h3 id="chartTitle">Pellet Price Trend (8mm)</h3>
       <canvas id="priceChart" width="400" height="200"></canvas>
-      <p class="timestamp">Last updated:17/7/25 <span id="pelletTimestamp">--</span></p>
+      <p class="timestamp">Last updated: <span id="pelletTimestamp">--</span></p>
     </section>
 
     <hr/>
 
+    <!-- ✅ Briquette Graph Section -->
     <section class="section graph-box">
       <label for="briquetteSelect"><strong>Select Briquette Type for Price Trend:</strong></label>
       <select id="briquetteSelect" class="styled-dropdown"></select>
-      <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
+
+      <div class="specs" id="briquetteSpecs">
+        <p><strong>Ash:</strong> <span id="briquetteAsh">--</span></p>
+        <p><strong>Moisture:</strong> <span id="briquetteMoisture">--</span></p>
+        <p><strong>Kcal Value:</strong> <span id="briquetteKcal">--</span></p>
+      </div>
+
+      <h3 id="briquetteChartTitle">Briquette Price Trend (90mm)</h3>
       <canvas id="briquetteChart" width="400" height="200"></canvas>
-      <p class="timestamp">Last updated:17/7/25 <span id="briquetteTimestamp">--</span></p>
+      <p class="timestamp">Last updated: <span id="briquetteTimestamp">--</span></p>
     </section>
   </main>
-    
+
+  <!-- ✅ FOOTER -->
   <footer class="footer">
-    <p>&copy; 2025 EverythingPallets. Made with sustainability in mind.</p>
+    <p>&copy; 2025 EverythingPellets. Made with sustainability in mind.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- ✅ SCRIPT -->
+  <script src="js/market.js"></script>
 </body>
 </html>
