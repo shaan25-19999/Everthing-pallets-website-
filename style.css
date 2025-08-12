@@ -1,89 +1,139 @@
 /* =========================
-   Market.css – fixes & polish
+   EverythingPellets — Market.css (polished)
    ========================= */
 
-/* Base */
-* { box-sizing: border-box; }
-html,body{margin:0;padding:0;background:#F9F9F9;color:#1C3D5A;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+/* --- Theme tokens --- */
+:root{
+  --bg: #F6F8FB;
+  --ink: #16364F;
+  --muted: #6D8AA0;
+  --brand: #1C3D5A;
+  --brand-2: #66A5AD;
+  --accent: #D4AF37;
+  --card: #FFFFFF;
+  --ring: rgba(28,61,90,.12);
+  --shadow-1: 0 2px 6px rgba(22,54,79,.06);
+  --shadow-2: 0 10px 24px rgba(22,54,79,.08);
+  --radius: 14px;
+}
+
+/* --- Base / layout --- */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
+  background: radial-gradient(1200px 600px at 80% -10%, #EAF6F6 0%, transparent 60%) , var(--bg);
+}
 img{max-width:100%;height:auto;display:block}
-a{color:#1C3D5A;text-decoration:none}
-main{overflow-x:hidden;}              /* ✅ stop sideways scroll on mobile */
+a{text-decoration:none;color:var(--brand)}
+main{max-width:1120px;margin:0 auto;padding:28px 20px;overflow-x:hidden}
 
-/* Header / Nav (unchanged look) */
+/* --- Header --- */
 header{
-  background:linear-gradient(to right,#1C3D5A,#66A5AD);
-  color:#fff;text-align:center;padding:2rem 1rem;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  background: linear-gradient(90deg, var(--brand) 0%, #2D5C80 45%, var(--brand-2) 100%);
+  color:#fff;
+  padding:36px 20px 28px;
+  text-align:center;
+  box-shadow: var(--shadow-1);
 }
+header .market-logo{width:140px;margin:0 auto 10px}
+header h1{margin:0 0 4px;font-size:clamp(22px,3vw,30px);letter-spacing:.2px}
+header p{margin:0;opacity:.9}
+
+/* --- Nav --- */
 nav{
-  background:#EAF6F6;padding:1rem;display:flex;justify-content:center;gap:2rem;font-weight:600;
+  position:sticky;top:0;z-index:20;
+  backdrop-filter: saturate(140%) blur(8px);
+  background: rgba(234,246,246,.8);
+  border-bottom:1px solid #E6EDF2;
+  display:flex;gap:28px;justify-content:center;align-items:center;
+  padding:12px 16px;
 }
-nav a{position:relative}
+nav a{position:relative;font-weight:600;color:var(--brand)}
 nav a::after{
-  content:'';position:absolute;width:0;height:2px;background:#66A5AD;bottom:-4px;left:0;transition:width .3s ease;
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;
+  background:linear-gradient(90deg,var(--brand-2),var(--brand));
+  transform:scaleX(0);transform-origin:left;transition:.25s ease;
 }
-nav a:hover::after{width:100%}
+nav a:hover::after{transform:scaleX(1)}
 
-/* Sections */
-main{padding:2rem 5%}
-.section{margin-bottom:2rem}
+/* --- Sections / cards --- */
+.section{margin:24px 0}
+.card, .graph-box{
+  background:var(--card); border:1px solid #E6EDF2; border-radius:var(--radius);
+  box-shadow:var(--shadow-2); padding:16px;
+}
+.section > h3{margin:0 0 10px;font-size:1.1rem;color:var(--ink)}
 
-/* Tables */
+/* --- Controls --- */
+label{font-weight:600;color:var(--ink)}
+.styled-dropdown, select{
+  font:inherit;color:var(--ink);background:#fff;
+  border:1px solid #CFE3EB; border-radius:12px; padding:.6rem .9rem; outline:none;
+  min-width:190px; max-width:280px; width:auto; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2316364F' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .8rem center;background-size:12px;
+  transition:border-color .2s, box-shadow .2s;
+}
+select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,175,55,.18)}
+
+/* --- Tables --- */
 table{
-  width:100%;border-collapse:collapse;margin-top:.5rem;background:#fff;border-radius:10px;overflow:hidden;
-  box-shadow:0 0 15px rgba(0,0,0,.05)
+  width:100%; border-collapse:separate; border-spacing:0; overflow:hidden;
+  background:#fff; border:1px solid #E6EDF2; border-radius:var(--radius);
+  box-shadow:var(--shadow-2);
 }
-th,td{border:1px solid #eee;padding:.8rem;text-align:center;transition:background-color .3s ease}
-th{background:#E0F1F1;font-weight:600;font-size:1rem}
-tr:hover{background:#F2FAFA}
+th{
+  background:linear-gradient(180deg,#F4FBFB 0%, #E9F4F7 100%);
+  color:var(--ink); font-weight:700; padding:.85rem .8rem; text-align:left;
+  border-bottom:1px solid #E6EDF2;
+}
+td{padding:.85rem .8rem;border-top:1px solid #F1F5F9}
+tr:nth-child(odd) td{background:#FCFEFF}
+tr:hover td{background:#F6FBFD}
+td strong{color:#0E2A40}
+.table-right{text-align:right}
 
-/* ✅ Sparklines (cap height; smooth bars) */
-.sparkline{display:flex;align-items:flex-end;gap:4px;height:34px;overflow:hidden}
+/* --- Sparkline bars (compact, consistent) --- */
+.sparkline{display:flex;align-items:flex-end;gap:4px;height:30px}
 .spark{
-  width:6px;border-radius:3px;background:#52b788;
-  max-height:32px;                      /* cap even if inline height is big */
+  width:6px;border-radius:3px;background:#3BB273;
+  height:22px;/* default */
 }
+.spark[data-h]{height:attr(data-h px)} /* works as fallback-less hint; heights set inline is fine */
 .spark.briq{background:#6a4f2d}
 
-/* ✅ Dropdowns (don’t stretch too wide) */
-.styled-dropdown,
-select{
-  font:inherit;color:#1C3D5A;background:#fff;border:1px solid #66A5AD;border-radius:10px;
-  padding:.55rem .9rem;outline:none;
-  width:auto;                            /* stop full‑width on desktop */
-  min-width:170px; max-width:260px;      /* keep it tidy */
-  appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231C3D5A' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right .8rem center;background-size:12px;
+/* --- Specs row under dropdowns --- */
+.specs{
+  display:flex;flex-wrap:wrap;gap:14px 24px;margin:10px 0 6px;
+  color:var(--muted);font-weight:600
 }
-select:focus{border-color:#D4AF37;box-shadow:0 0 0 3px rgba(212,175,55,.2)}
+.specs p{margin:0}
+.specs strong{color:var(--ink)}
 
-/* ✅ Chart containers & canvases */
-.graph-box{
-  background:#fff;border:1px solid #E6EDF2;border-radius:14px;padding:12px;
-  box-shadow:0 10px 24px rgba(28,61,90,.06),0 2px 6px rgba(28,61,90,.06)
-}
+/* --- Charts --- */
+.graph-box{padding:14px 14px 8px}
+#chartTitle,#briquetteChartTitle{margin:6px 0 6px;font-size:1.05rem}
 canvas{
-  display:block;width:100% !important;  /* stretch to container */
-  height:300px !important;              /* cap height on desktop */
-  background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.07);
-  padding:8px;                          /* small padding to avoid huge box */
+  display:block;width:100% !important;height:280px !important;
+  background:#fff;border-radius:12px;box-shadow:var(--shadow-1);
 }
 
-/* ✅ Mobile tuning */
-@media (max-width: 768px){
-  main{padding:1.4rem 4%}
-  .styled-dropdown, select{width:100%;max-width:100%}  /* full width on mobile */
-  canvas{height:220px !important;}                     /* lower chart height */
-  .sparkline{height:28px}
-  .spark{max-height:26px}
-}
+/* --- Timestamps --- */
+.timestamp,.last-updated{color:#7A8FA4;font-size:.9rem;text-align:right;margin:.4rem 2px 0}
 
-/* Footer */
+/* --- Footer --- */
 .footer{
-  background:linear-gradient(to right,#1C3D5A,#66A5AD);
-  color:#fff;text-align:center;padding:1.2rem;margin-top:2rem;font-size:.9rem
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));
+  color:#fff;text-align:center;padding:18px;margin-top:28px;font-size:.95rem
 }
 
-/* Misc */
-.last-updated{color:#888;font-size:.9rem;margin-top:.5rem;text-align:right;font-style:italic}
+/* --- Mobile --- */
+@media (max-width: 860px){
+  main{padding:22px 16px}
+  nav{gap:18px}
+  .styled-dropdown, select{width:100%;max-width:100%}
+  table{font-size:.97rem}
+  canvas{height:220px !important}
+}
