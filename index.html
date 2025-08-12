@@ -3,187 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Market Prices – EverythingPallets</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- ✅ SEO Meta Tags -->
+  <title>Biomass Market Prices in India – Pellets & Briquettes | EverythingPellets</title>
+  <meta name="description" content="View live biomass fuel prices including 8mm pellets and 90mm briquettes across India. Track price trends by location, material type, and quality specs.">
+  <meta name="keywords" content="biomass prices, pellet rates, briquette market, 8mm pellets, 90mm briquettes, biomass fuel India, renewable energy prices, market trend biomass">
+  <meta name="author" content="EverythingPellets">
+
+  <!-- ✅ Canonical URL -->
+  <link rel="canonical" href="https://everythingpellets.com/market.html" />
+
+  <!-- ✅ Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="Live Biomass Pellet & Briquette Prices in India – EverythingPellets">
+  <meta property="og:description" content="Compare prices of 8mm pellets and 90mm briquettes by state and material type. See price trends and quality insights.">
+  <meta property="og:image" content="https://everythingpellets.com/assets/preview.jpg"> <!-- 🔁 Replace if needed -->
+  <meta property="og:url" content="https://everythingpellets.com/market.html">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+  <!-- ✅ Styles & Scripts -->
+  <link rel="stylesheet" href="style/market.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
-  <!-- Header -->
+
+  <!-- ✅ HEADER WITH LOGO AND TITLE -->
   <header class="sticky-header">
     <div class="market-logo-container">
-      <img src="assets/Logo.png" alt="EverythingPallets Logo" class="market-logo" />
-      <h1 class="market-heading">Market Prices</h1>
-      <p class="market-subheading">Live Pellet & Briquette Price Intelligence by Location</p>
+      <img src="assets/Logo.png" alt="EverythingPellets Logo" class="market-logo" />
     </div>
+    <h1>Market Prices</h1>
+    <p>Live Pellet & Briquette Price Intelligence by Location</p>
   </header>
 
-  <!-- Nav -->
+  <!-- ✅ NAVIGATION -->
   <nav class="sticky-nav">
     <a href="index.html">Home</a>
-    <a href="market.html" class="active">Market Prices</a>
+    <a href="market.html">Market Prices</a>
     <a href="news.html">News</a>
     <a href="contact.html">Contact</a>
   </nav>
 
+  <!-- ✅ MAIN CONTENT -->
   <main>
-    <!-- Select Location & Tables -->
     <section class="section">
-      <div class="controls-row">
-        <div class="control">
-          <label for="locationSelect"><strong>Select Location:</strong></label>
-          <select id="locationSelect" class="styled-dropdown"></select>
-        </div>
-        <div class="last-updated" id="lastUpdated">Last updated: --</div>
-      </div>
+      <label for="locationSelect"><strong>Select Location:</strong></label>
+      <select id="locationSelect" class="styled-dropdown"></select>
     </section>
 
+    <hr/>
+
     <section class="section">
-      <h3>Pellet Prices (₹/ton)</h3>
+      <h3>Pellet Prices (₹/ton) (8mm)</h3>
       <table id="materialTable" class="hover-table"></table>
     </section>
 
+    <hr/>
+
     <section class="section">
-      <h3>Briquette Prices (₹/ton)</h3>
+      <h3>Briquette Prices (₹/ton) (90mm)</h3>
       <table id="briquetteTable" class="hover-table"></table>
     </section>
 
-    <!-- Charts -->
+    <hr/>
+
+    <!-- ✅ Pellet Graph Section -->
     <section class="section graph-box">
-      <div class="chart-head">
-        <div>
-          <label for="materialSelect"><strong>Select Pellet Type:</strong></label>
-          <select id="materialSelect" class="styled-dropdown"></select>
-        </div>
-        <h3 id="chartTitle">Pellet Price Trend</h3>
+      <label for="materialSelect"><strong>Select Pellet Type for Price Trend:</strong></label>
+      <select id="materialSelect" class="styled-dropdown"></select>
+
+      <div class="specs" id="pelletSpecs">
+        <p><strong>Ash:</strong> <span id="pelletAsh">--</span></p>
+        <p><strong>Moisture:</strong> <span id="pelletMoisture">--</span></p>
+        <p><strong>Kcal Value:</strong> <span id="pelletKcal">--</span></p>
       </div>
-      <div class="chart-wrap">
-        <canvas id="priceChart" height="220"></canvas>
-      </div>
-      <p class="timestamp" id="pelletTimestamp">--</p>
+
+      <h3 id="chartTitle">Pellet Price Trend (8mm)</h3>
+      <canvas id="priceChart" width="400" height="200"></canvas>
+      <p class="timestamp">Last updated: <span id="pelletTimestamp">--</span></p>
     </section>
 
+    <hr/>
+
+    <!-- ✅ Briquette Graph Section -->
     <section class="section graph-box">
-      <div class="chart-head">
-        <div>
-          <label for="briquetteSelect"><strong>Select Briquette Type:</strong></label>
-          <select id="briquetteSelect" class="styled-dropdown"></select>
-        </div>
-        <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
-      </div>
-      <div class="chart-wrap">
-        <canvas id="briquetteChart" height="220"></canvas>
-      </div>
-      <p class="timestamp" id="briquetteTimestamp">--</p>
-    </section>
+      <label for="briquetteSelect"><strong>Select Briquette Type for Price Trend:</strong></label>
+      <select id="briquetteSelect" class="styled-dropdown"></select>
 
-    <!-- NEW: Freight Calculator -->
-    <section class="section card">
-      <h3>Freight & Landed Cost Calculator</h3>
-      <div class="grid-2">
-        <div class="field">
-          <label>Source (City/Hub)</label>
-          <input id="fc_source" type="text" placeholder="e.g., Ludhiana" />
-        </div>
-        <div class="field">
-          <label>Destination (City/Plant)</label>
-          <input id="fc_destination" type="text" placeholder="e.g., Bhiwadi" />
-        </div>
-        <div class="field">
-          <label>Distance (km)</label>
-          <input id="fc_km" type="number" min="1" placeholder="e.g., 320" />
-        </div>
-        <div class="field">
-          <label>Quantity (tons)</label>
-          <input id="fc_tons" type="number" min="1" placeholder="e.g., 20" />
-        </div>
-        <div class="field">
-          <label>Truck Type</label>
-          <select id="fc_truck">
-            <option value="10">10T (LPT)</option>
-            <option value="16">16T</option>
-            <option value="20" selected>20T</option>
-            <option value="24">24T</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Freight Base (₹/km)</label>
-          <input id="fc_ratepkm" type="number" min="1" placeholder="e.g., 35" />
-        </div>
-        <div class="field">
-          <label>Ex-Factory Price (₹/ton) <span class="muted">(optional)</span></label>
-          <input id="fc_exfactory" type="number" min="0" placeholder="e.g., 7800" />
-        </div>
-      </div>
-      <div class="actions">
-        <button id="fc_calc" class="btn primary">Calculate</button>
-        <button id="fc_reset" class="btn">Reset</button>
-      </div>
-      <div id="fc_result" class="result"></div>
-      <p class="note">* Estimates only. Actuals depend on lane, loading, wait time & diesel price.</p>
-    </section>
-
-    <!-- NEW: Submit Your Own Price -->
-    <section class="section card">
-      <h3>Submit Your Own Price</h3>
-      <p class="muted">Help keep the market sharp. Submissions are reviewed before inclusion.</p>
-      <div class="grid-3">
-        <div class="field">
-          <label>State/Region</label>
-          <select id="sp_state"></select>
-        </div>
-        <div class="field">
-          <label>Material</label>
-          <select id="sp_material">
-            <option>Pellet – Rice Husk</option>
-            <option>Pellet – Sawdust</option>
-            <option>Pellet – Mixed Agro</option>
-            <option>Briquette – Mustard</option>
-            <option>Briquette – Mixed Agro</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Price (₹/ton)</label>
-          <input id="sp_price" type="number" min="1" placeholder="e.g., 7700" />
-        </div>
-        <div class="field">
-          <label>Quantity (tons)</label>
-          <input id="sp_qty" type="number" min="1" placeholder="e.g., 40" />
-        </div>
-        <div class="field">
-          <label>City / Cluster</label>
-          <input id="sp_city" type="text" placeholder="e.g., Yamunanagar" />
-        </div>
-        <div class="field">
-          <label>Notes (optional)</label>
-          <input id="sp_notes" type="text" placeholder="e.g., ex-factory, incl. loading" />
-        </div>
-      </div>
-      <div class="actions">
-        <button id="sp_submit" class="btn primary">Submit Price</button>
+      <div class="specs" id="briquetteSpecs">
+        <p><strong>Ash:</strong> <span id="briquetteAsh">--</span></p>
+        <p><strong>Moisture:</strong> <span id="briquetteMoisture">--</span></p>
+        <p><strong>Kcal Value:</strong> <span id="briquetteKcal">--</span></p>
       </div>
 
-      <div class="community-wrap">
-        <h4>Community Prices (recent)</h4>
-        <div id="sp_feed" class="feed"></div>
-      </div>
-    </section>
-
-    <!-- NEW: Call CTA -->
-    <section class="section cta">
-      <h3>Call for Best Rates & Top Quality Biofuel</h3>
-      <p>Verified supply, consistent quality, trusted delivery.</p>
-      <div class="cta-actions">
-        <a href="tel:+919999999999" class="btn primary">📞 Call Now</a>
-        <a href="https://wa.me/919999999999?text=Hi%20Peltra%2C%20I%20need%20best%20rates%20and%20quality%20biofuel." target="_blank" class="btn ghost">💬 WhatsApp</a>
-      </div>
+      <h3 id="briquetteChartTitle">Briquette Price Trend (90mm)</h3>
+      <canvas id="briquetteChart" width="400" height="200"></canvas>
+      <p class="timestamp">Last updated: <span id="briquetteTimestamp">--</span></p>
     </section>
   </main>
 
+  <!-- ✅ FOOTER -->
   <footer class="footer">
-    <p>&copy; 2025 EverythingPallets. Made with sustainability in mind.</p>
+    <p>&copy; 2025 EverythingPellets. Made with sustainability in mind.</p>
   </footer>
 
+  <!-- ✅ SCRIPT -->
   <script src="script.js"></script>
 </body>
 </html>
