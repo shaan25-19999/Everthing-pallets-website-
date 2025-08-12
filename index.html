@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Market Prices • EverythingPallets</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Market Prices – EverythingPallets</title>
+  <link rel="stylesheet" href="style/market.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -12,226 +13,177 @@
   <header class="sticky-header">
     <div class="market-logo-container">
       <img src="assets/Logo.png" alt="EverythingPallets Logo" class="market-logo" />
+      <h1 class="market-heading">Market Prices</h1>
+      <p class="market-subheading">Live Pellet & Briquette Price Intelligence by Location</p>
     </div>
-    <h1 class="page-title">Market Prices</h1>
-    <p class="page-subtitle">Live Pellet & Briquette Price Intelligence by Location</p>
   </header>
 
   <!-- Nav -->
   <nav class="sticky-nav">
     <a href="index.html">Home</a>
-    <a href="market.html" aria-current="page">Market Prices</a>
+    <a href="market.html" class="active">Market Prices</a>
     <a href="news.html">News</a>
     <a href="contact.html">Contact</a>
   </nav>
 
   <main>
-    <!-- Location + Price Tables -->
+    <!-- Select Location & Tables -->
     <section class="section">
-      <div class="section-header">
-        <h2>Pellet Prices (₹/ton)</h2>
-        <span id="marketLastUpdated" class="badge">Last updated: —</span>
+      <div class="controls-row">
+        <div class="control">
+          <label for="locationSelect"><strong>Select Location:</strong></label>
+          <select id="locationSelect" class="styled-dropdown"></select>
+        </div>
+        <div class="last-updated" id="lastUpdated">Last updated: --</div>
       </div>
-      <div class="filters">
-        <label for="locationSelect"><strong>Location:</strong></label>
-        <select id="locationSelect" class="styled-dropdown"></select>
-      </div>
+    </section>
+
+    <section class="section">
+      <h3>Pellet Prices (₹/ton)</h3>
       <table id="materialTable" class="hover-table"></table>
     </section>
 
     <section class="section">
-      <div class="section-header">
-        <h2>Briquette Prices (₹/ton)</h2>
-      </div>
+      <h3>Briquette Prices (₹/ton)</h3>
       <table id="briquetteTable" class="hover-table"></table>
     </section>
 
-    <!-- Trend Charts -->
+    <!-- Charts -->
     <section class="section graph-box">
-      <div class="chart-header">
-        <label for="materialSelect"><strong>Select Pellet Type:</strong></label>
-        <select id="materialSelect" class="styled-dropdown"></select>
+      <div class="chart-head">
+        <div>
+          <label for="materialSelect"><strong>Select Pellet Type:</strong></label>
+          <select id="materialSelect" class="styled-dropdown"></select>
+        </div>
+        <h3 id="chartTitle">Pellet Price Trend</h3>
       </div>
-      <h3 id="chartTitle">Pellet Price Trend</h3>
-      <canvas id="priceChart" width="400" height="220"></canvas>
-      <p class="timestamp">Last updated: <span id="pelletTimestamp">—</span></p>
+      <div class="chart-wrap">
+        <canvas id="priceChart" height="220"></canvas>
+      </div>
+      <p class="timestamp" id="pelletTimestamp">--</p>
     </section>
 
     <section class="section graph-box">
-      <div class="chart-header">
-        <label for="briquetteSelect"><strong>Select Briquette Type:</strong></label>
-        <select id="briquetteSelect" class="styled-dropdown"></select>
+      <div class="chart-head">
+        <div>
+          <label for="briquetteSelect"><strong>Select Briquette Type:</strong></label>
+          <select id="briquetteSelect" class="styled-dropdown"></select>
+        </div>
+        <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
       </div>
-      <h3 id="briquetteChartTitle">Briquette Price Trend</h3>
-      <canvas id="briquetteChart" width="400" height="220"></canvas>
-      <p class="timestamp">Last updated: <span id="briquetteTimestamp">—</span></p>
+      <div class="chart-wrap">
+        <canvas id="briquetteChart" height="220"></canvas>
+      </div>
+      <p class="timestamp" id="briquetteTimestamp">--</p>
     </section>
 
-    <!-- ============ NEW FEATURES START ============ -->
-
-    <!-- 1) Freight Calculator -->
-    <section class="section card" id="freight">
-      <div class="section-header">
-        <h2>Freight Calculator</h2>
-        <p class="muted">Get delivered cost per ton in seconds.</p>
-      </div>
-
-      <form id="freightForm" class="grid grid-2">
-        <div class="form-field">
-          <label for="fromPlace">Pickup (City/State)</label>
-          <input id="fromPlace" name="fromPlace" type="text" placeholder="e.g., Ludhiana, Punjab" />
+    <!-- NEW: Freight Calculator -->
+    <section class="section card">
+      <h3>Freight & Landed Cost Calculator</h3>
+      <div class="grid-2">
+        <div class="field">
+          <label>Source (City/Hub)</label>
+          <input id="fc_source" type="text" placeholder="e.g., Ludhiana" />
         </div>
-
-        <div class="form-field">
-          <label for="toPlace">Delivery (City/State)</label>
-          <input id="toPlace" name="toPlace" type="text" placeholder="e.g., Bhiwadi, Rajasthan" />
+        <div class="field">
+          <label>Destination (City/Plant)</label>
+          <input id="fc_destination" type="text" placeholder="e.g., Bhiwadi" />
         </div>
-
-        <div class="form-field">
-          <label for="distanceKm">Distance (km)</label>
-          <input id="distanceKm" name="distanceKm" type="number" min="1" placeholder="e.g., 320" required />
+        <div class="field">
+          <label>Distance (km)</label>
+          <input id="fc_km" type="number" min="1" placeholder="e.g., 320" />
         </div>
-
-        <div class="form-field">
-          <label for="quantityTons">Quantity (tons)</label>
-          <input id="quantityTons" name="quantityTons" type="number" min="1" placeholder="e.g., 28" required />
+        <div class="field">
+          <label>Quantity (tons)</label>
+          <input id="fc_tons" type="number" min="1" placeholder="e.g., 20" />
         </div>
-
-        <div class="form-field">
-          <label for="truckCapacity">Truck Capacity (tons)</label>
-          <select id="truckCapacity" name="truckCapacity">
-            <option>10</option>
-            <option>16</option>
-            <option selected>20</option>
-            <option>28</option>
+        <div class="field">
+          <label>Truck Type</label>
+          <select id="fc_truck">
+            <option value="10">10T (LPT)</option>
+            <option value="16">16T</option>
+            <option value="20" selected>20T</option>
+            <option value="24">24T</option>
           </select>
         </div>
-
-        <div class="form-field">
-          <label for="ratePerKm">Freight Rate (₹/km)</label>
-          <input id="ratePerKm" name="ratePerKm" type="number" min="1" value="30" />
+        <div class="field">
+          <label>Freight Base (₹/km)</label>
+          <input id="fc_ratepkm" type="number" min="1" placeholder="e.g., 35" />
         </div>
-
-        <div class="form-field">
-          <label for="baseMaterialPrice">Material Price (₹/ton)</label>
-          <input id="baseMaterialPrice" name="baseMaterialPrice" type="number" min="0" placeholder="Optional: e.g., 7600" />
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn primary">Calculate Freight</button>
-          <button type="button" id="clearFreight" class="btn ghost">Clear</button>
-        </div>
-      </form>
-
-      <div id="freightResult" class="result-grid">
-        <div class="result-box">
-          <span class="result-label">Trips Required</span>
-          <span id="rTrips" class="result-value">—</span>
-        </div>
-        <div class="result-box">
-          <span class="result-label">Total Freight (₹)</span>
-          <span id="rTotalFreight" class="result-value">—</span>
-        </div>
-        <div class="result-box">
-          <span class="result-label">Freight / ton (₹)</span>
-          <span id="rFreightPerTon" class="result-value">—</span>
-        </div>
-        <div class="result-box">
-          <span class="result-label">Landed Cost / ton (₹)</span>
-          <span id="rLandedPerTon" class="result-value accent">—</span>
+        <div class="field">
+          <label>Ex-Factory Price (₹/ton) <span class="muted">(optional)</span></label>
+          <input id="fc_exfactory" type="number" min="0" placeholder="e.g., 7800" />
         </div>
       </div>
-      <p class="tiny muted">Note: Estimates assume direct route and standard market conditions. Adjust rate/km for accuracy.</p>
+      <div class="actions">
+        <button id="fc_calc" class="btn primary">Calculate</button>
+        <button id="fc_reset" class="btn">Reset</button>
+      </div>
+      <div id="fc_result" class="result"></div>
+      <p class="note">* Estimates only. Actuals depend on lane, loading, wait time & diesel price.</p>
     </section>
 
-    <!-- 2) Fuel Comparison (our materials only) -->
-    <section class="section card" id="fuel-compare">
-      <div class="section-header">
-        <h2>Fuel Comparison (Cost per Energy)</h2>
-        <p class="muted">Compare ₹ per million kcal for materials we trade. Lower is better.</p>
+    <!-- NEW: Submit Your Own Price -->
+    <section class="section card">
+      <h3>Submit Your Own Price</h3>
+      <p class="muted">Help keep the market sharp. Submissions are reviewed before inclusion.</p>
+      <div class="grid-3">
+        <div class="field">
+          <label>State/Region</label>
+          <select id="sp_state"></select>
+        </div>
+        <div class="field">
+          <label>Material</label>
+          <select id="sp_material">
+            <option>Pellet – Rice Husk</option>
+            <option>Pellet – Sawdust</option>
+            <option>Pellet – Mixed Agro</option>
+            <option>Briquette – Mustard</option>
+            <option>Briquette – Mixed Agro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Price (₹/ton)</label>
+          <input id="sp_price" type="number" min="1" placeholder="e.g., 7700" />
+        </div>
+        <div class="field">
+          <label>Quantity (tons)</label>
+          <input id="sp_qty" type="number" min="1" placeholder="e.g., 40" />
+        </div>
+        <div class="field">
+          <label>City / Cluster</label>
+          <input id="sp_city" type="text" placeholder="e.g., Yamunanagar" />
+        </div>
+        <div class="field">
+          <label>Notes (optional)</label>
+          <input id="sp_notes" type="text" placeholder="e.g., ex-factory, incl. loading" />
+        </div>
+      </div>
+      <div class="actions">
+        <button id="sp_submit" class="btn primary">Submit Price</button>
       </div>
 
-      <div class="table-scroll">
-        <table id="fuelCompareTable" class="hover-table compact">
-          <thead>
-            <tr>
-              <th>Fuel</th>
-              <th>kcal/kg</th>
-              <th>Price (₹/ton)</th>
-              <th>₹ / MMkcal</th>
-              <th>Best</th>
-            </tr>
-          </thead>
-          <tbody id="fuelCompareBody">
-            <!-- JS will render rows -->
-          </tbody>
-        </table>
-      </div>
-
-      <div class="form-actions right">
-        <button id="recalcFuel" class="btn">Recalculate</button>
-        <button id="resetFuel" class="btn ghost">Reset</button>
+      <div class="community-wrap">
+        <h4>Community Prices (recent)</h4>
+        <div id="sp_feed" class="feed"></div>
       </div>
     </section>
 
-    <!-- 3) Submit your price + Call for best rates -->
-    <section class="section card" id="leads">
-      <div class="grid grid-2 stack-sm">
-        <!-- Submit Price -->
-        <div class="panel">
-          <h3>Submit Your Own Price</h3>
-          <p class="muted">Help improve the index. Share what you paid or were quoted today.</p>
-          <form id="submitPriceForm" class="grid">
-            <div class="form-field">
-              <label for="spMaterial">Material</label>
-              <select id="spMaterial">
-                <option>Wood Pellet 8mm</option>
-                <option>Mustard Husk Briquette</option>
-                <option>Rice Husk Pellet</option>
-                <option>Bagasse Briquette</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="spLocation">Location (City/State)</label>
-              <input id="spLocation" type="text" placeholder="e.g., Sonipat, Haryana" />
-            </div>
-            <div class="form-field">
-              <label for="spPrice">Price (₹/ton)</label>
-              <input id="spPrice" type="number" min="0" placeholder="e.g., 7600" />
-            </div>
-            <div class="form-field">
-              <label for="spQty">Quantity (tons)</label>
-              <input id="spQty" type="number" min="1" placeholder="Optional" />
-            </div>
-            <div class="form-actions">
-              <button class="btn primary" type="submit">Submit Price</button>
-              <span id="spStatus" class="tiny muted"></span>
-            </div>
-          </form>
-        </div>
-
-        <!-- Call for Best Rates -->
-        <div class="panel highlight">
-          <h3>Call for Best Rates & Top‑Quality Biofuel</h3>
-          <p class="muted">Speak to Peltra sourcing—fast quotes, verified suppliers, consistent quality.</p>
-          <div class="cta-buttons">
-            <a class="btn primary big" href="tel:+919999999999">📞 Call Now</a>
-            <a id="waBestRates" class="btn whats big" target="_blank" rel="noopener">
-              💬 WhatsApp Us
-            </a>
-          </div>
-          <p class="tiny muted">Tip: Share your location & quantity to get a faster quote.</p>
-        </div>
+    <!-- NEW: Call CTA -->
+    <section class="section cta">
+      <h3>Call for Best Rates & Top Quality Biofuel</h3>
+      <p>Verified supply, consistent quality, trusted delivery.</p>
+      <div class="cta-actions">
+        <a href="tel:+919999999999" class="btn primary">📞 Call Now</a>
+        <a href="https://wa.me/919999999999?text=Hi%20Peltra%2C%20I%20need%20best%20rates%20and%20quality%20biofuel." target="_blank" class="btn ghost">💬 WhatsApp</a>
       </div>
     </section>
-
-    <!-- ============ NEW FEATURES END ============ -->
   </main>
 
   <footer class="footer">
     <p>&copy; 2025 EverythingPallets. Made with sustainability in mind.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="market.js"></script>
 </body>
 </html>
