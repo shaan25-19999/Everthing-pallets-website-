@@ -116,4 +116,114 @@
   <!-- ✅ SCRIPT -->
   <script src="script.js"></script>
 </body>
+<!-- ========================= -->
+<!-- FREIGHT & LANDED COST CALCULATOR -->
+<!-- ========================= -->
+<section class="section card" id="freightCalculator">
+  <h3>Freight & Landed Cost Calculator</h3>
+  <div class="grid-2">
+    <div class="field">
+      <label>Source (City/Hub)</label>
+      <input id="fc_source" type="text" placeholder="e.g., Ludhiana" />
+    </div>
+    <div class="field">
+      <label>Destination (City/Plant)</label>
+      <input id="fc_destination" type="text" placeholder="e.g., Bhiwadi" />
+    </div>
+    <div class="field">
+      <label>Distance (km)</label>
+      <input id="fc_km" type="number" min="1" placeholder="e.g., 320" />
+    </div>
+    <div class="field">
+      <label>Quantity (tons)</label>
+      <input id="fc_tons" type="number" min="1" placeholder="e.g., 20" />
+    </div>
+    <div class="field">
+      <label>Truck Type</label>
+      <select id="fc_truck">
+        <option value="10">10T (LPT)</option>
+        <option value="16">16T</option>
+        <option value="20" selected>20T</option>
+        <option value="24">24T</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Freight Base (₹/km)</label>
+      <input id="fc_ratepkm" type="number" min="1" placeholder="e.g., 35" />
+    </div>
+    <div class="field">
+      <label>Ex-Factory Price (₹/ton) <span class="muted">(optional)</span></label>
+      <input id="fc_exfactory" type="number" min="0" placeholder="e.g., 7800" />
+    </div>
+  </div>
+  <div class="actions">
+    <button id="fc_calc" class="btn primary">Calculate</button>
+    <button id="fc_reset" class="btn">Reset</button>
+  </div>
+  <div id="fc_result" class="result"></div>
+  <p class="note">* Estimates only. Actuals depend on lane, loading, wait time & diesel price.</p>
+</section>
+
+<!-- ========================= -->
+<!-- SUBMIT YOUR OWN PRICE (local only) -->
+<!-- ========================= -->
+<section class="section card" id="submitPrice">
+  <h3>Submit Your Own Price</h3>
+  <p class="muted">Keep the market sharp. Submissions are reviewed before inclusion.</p>
+
+  <div class="grid-3">
+    <div class="field">
+      <label>State/Region</label>
+      <!-- Will auto-fill from #locationSelect if present; else you can type -->
+      <select id="sp_state"></select>
+    </div>
+    <div class="field">
+      <label>Material</label>
+      <select id="sp_material">
+        <option>Pellet – Rice Husk</option>
+        <option>Pellet – Sawdust</option>
+        <option>Pellet – Mixed Agro</option>
+        <option>Briquette – Mustard</option>
+        <option>Briquette – Mixed Agro</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Price (₹/ton)</label>
+      <input id="sp_price" type="number" min="1" placeholder="e.g., 7700" />
+    </div>
+    <div class="field">
+      <label>Quantity (tons)</label>
+      <input id="sp_qty" type="number" min="1" placeholder="e.g., 40" />
+    </div>
+    <div class="field">
+      <label>City / Cluster</label>
+      <input id="sp_city" type="text" placeholder="e.g., Yamunanagar" />
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <input id="sp_notes" type="text" placeholder="e.g., ex-factory, incl. loading" />
+    </div>
+  </div>
+  <div class="actions">
+    <button id="sp_submit" class="btn primary">Submit Price</button>
+  </div>
+
+  <div class="community-wrap">
+    <h4>Community Prices (recent)</h4>
+    <div id="sp_feed" class="feed"></div>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- CALL FOR BEST RATES CTA -->
+<!-- ========================= -->
+<section class="section cta" id="bestRatesCTA">
+  <h3>Call for Best Rates & Top Quality Biofuel</h3>
+  <p>Verified supply, consistent quality, trusted delivery.</p>
+  <div class="cta-actions">
+    <a href="tel:+919999999999" class="btn primary">📞 Call Now</a>
+    <a href="https://wa.me/919999999999?text=Hi%20Peltra%2C%20I%20need%20best%20rates%20and%20quality%20biofuel." target="_blank" class="btn ghost">💬 WhatsApp</a>
+  </div>
+</section>
+
 </html>
