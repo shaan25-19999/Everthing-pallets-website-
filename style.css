@@ -1,26 +1,25 @@
-/* =======================================
-   THEME
-======================================= */
+/* ======================================
+   THEME TOKENS (unchanged palette)
+====================================== */
 :root{
   --ink:#1C3D5A;
-  --ink-2:#2b3f53;
-  --muted:#667;
+  --ink-2:#324a60;
+  --muted:#6b7a88;
   --brand:#66A5AD;
   --brand-2:#168aad;
   --gold:#D4AF37;
   --bg:#F7FAFB;
   --card:#FFFFFF;
-  --line:#D3E3EC;
-  --thead:#E9F4F4;
-  --shadow-sm:0 4px 10px rgba(0,0,0,.06);
-  --shadow-md:0 8px 22px rgba(28,61,90,.10);
-  --shadow-lg:0 18px 38px rgba(28,61,90,.12);
-  --radius:16px;
+  --line:#E6EEF2;
+  --thead:#EAF4F4;
+  --shadow-sm:0 2px 6px rgba(0,0,0,.05);
+  --shadow-md:0 6px 16px rgba(28,61,90,.08);
+  --radius:12px;
 }
 
-/* =======================================
-   RESET / BASE
-======================================= */
+/* ======================================
+   BASE / RESET
+====================================== */
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 body{
@@ -28,152 +27,138 @@ body{
   font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   color:var(--ink); background:var(--bg);
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  animation:fadeIn .5s ease;
+  animation:fadeIn .35s ease;
 }
-@keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)} }
 img{ display:block; max-width:100%; }
+a{ color:inherit; }
 
-/* Typography scale */
-h1,h2,h3{ color:var(--ink); letter-spacing:.2px; line-height:1.2; margin:0 0 .6rem; }
-h1{ font-size:clamp(1.8rem,3.8vw,2.4rem); }
-h2{ font-size:clamp(1.4rem,3.2vw,2rem); }
-h3{ font-size:clamp(1.1rem,2.6vw,1.35rem); }
-p{ margin:.25rem 0 .75rem; }
+/* Type scale (subtle, consistent) */
+h1,h2,h3{ margin:0 0 .6rem; line-height:1.2; letter-spacing:.2px; color:var(--ink); }
+h1{ font-weight:800; font-size:clamp(1.8rem,3.6vw,2.25rem); }
+h2{ font-weight:700; font-size:clamp(1.35rem,2.8vw,1.75rem); }
+h3{ font-weight:700; font-size:clamp(1.05rem,2.3vw,1.25rem); }
+p{ margin:.35rem 0 .8rem; color:var(--ink-2); }
 .muted,.note{ color:var(--muted); }
 
-/* =======================================
-   HEADER
-======================================= */
+/* ======================================
+   HEADER (sleek gradient, no heavy glow)
+====================================== */
 header{
-  background:linear-gradient(115deg, var(--ink) 0%, var(--brand) 100%);
-  color:#fff; text-align:center; padding:2.2rem 1rem 2rem;
+  background:linear-gradient(120deg, var(--ink), var(--brand));
+  color:#fff; text-align:center; padding:1.8rem 1rem 1.6rem;
   box-shadow:var(--shadow-sm);
-  position:relative; overflow:hidden;
-}
-header::after{
-  content:""; position:absolute; inset:auto -20% -40% -20%;
-  height:180px; background:radial-gradient(60% 120% at 50% 0%, rgba(255,255,255,.12), transparent 60%);
 }
 header h1{ color:#fff; }
 
-/* =======================================
-   NAV
-======================================= */
+/* ======================================
+   NAV (understated)
+====================================== */
 nav{
-  background:#ECF7F7; padding:.9rem 1rem;
-  display:flex; justify-content:center; gap:2rem; font-weight:600;
-  position:sticky; top:0; z-index:20; box-shadow:0 1px 0 rgba(0,0,0,.035);
+  background:#EDF7F7; padding:.8rem 1rem;
+  display:flex; justify-content:center; align-items:center;
+  gap:1.6rem; font-weight:600;
+  position:sticky; top:0; z-index:5; box-shadow:0 1px 0 rgba(0,0,0,.04);
 }
-.nav-links{ display:flex; gap:2rem; flex-wrap:wrap; justify-content:center; }
+.nav-links{ display:flex; gap:1.6rem; flex-wrap:wrap; justify-content:center; }
 nav a{
-  color:var(--ink); text-decoration:none; position:relative; padding:.3rem 0;
+  text-decoration:none; padding:.2rem .1rem; position:relative;
+  color:var(--ink);
 }
 nav a::after{
   content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
-  background:var(--brand); transition:width .22s ease;
+  background:var(--brand); transition:width .2s ease;
 }
 nav a:hover{ color:var(--brand-2); }
 nav a:hover::after{ width:100%; }
 
-/* =======================================
+/* ======================================
    LAYOUT
-======================================= */
-main{
-  width:min(1120px,92%); margin-inline:auto;
-  padding:2.2rem 0;
-}
-.section{ margin-bottom:2rem; transition:transform .25s ease; }
-.section:hover{ transform:translateY(-2px); }
+====================================== */
+main{ width:min(1100px,92%); margin-inline:auto; padding:2rem 0; }
+.section{ margin-bottom:2rem; }
 
-/* =======================================
+/* ======================================
    MARKET HEADER BLOCK (logo + title)
-======================================= */
-.market-logo-container{ text-align:center; margin:1.1rem 0 1.2rem; }
-.market-logo{ max-width:136px; height:auto; margin:0 auto .7rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,.05)); }
-.market-heading{ font-size:1.75rem; font-weight:800; color:#173248; margin:0; }
-.market-subheading{ font-size:1.05rem; font-weight:500; color:var(--brand-2); margin-top:.3rem; }
+====================================== */
+.market-logo-container{ text-align:center; margin:1rem 0 1.1rem; }
+.market-logo{ max-width:132px; height:auto; margin:0 auto .6rem; }
+.market-heading{ font-size:1.6rem; font-weight:800; margin:0; }
+.market-subheading{ font-size:1rem; font-weight:600; color:var(--brand-2); margin-top:.25rem; }
 
+/* quick facts row */
 .specs{
-  display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;
-  margin:.5rem 0 .25rem; font-size:.98rem; color:#345;
+  display:flex; gap:1.1rem; justify-content:center; flex-wrap:wrap;
+  margin:.45rem 0 .25rem; font-size:.96rem; color:#3a4f64;
 }
-.specs p{ margin:.15rem 0; }
+.specs p{ margin:.1rem 0; }
 
-/* =======================================
-   CARDS / GRIDS
-======================================= */
+/* ======================================
+   CARDS & GRIDS (calm, consistent)
+====================================== */
 .card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:18px;
-  box-shadow:var(--shadow-md);
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-sm);
 }
-.grid-2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-.grid-3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.grid-2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
 
-/* Fields */
-.field label{ display:block; margin-bottom:6px; font-weight:700; color:#21425e; }
-.field input,.field select, .field textarea{
-  width:100%; padding:12px 14px; border:1px solid var(--line);
-  border-radius:12px; font:inherit; color:var(--ink); background:#fff;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
+/* ======================================
+   FORMS
+====================================== */
+.field label{ display:block; margin:0 0 .45rem; font-weight:700; color:#1f3c54; }
+.field input,.field select,.field textarea{
+  width:100%; padding:11px 12px; border:1px solid var(--line);
+  border-radius:10px; font:inherit; color:var(--ink); background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.03);
 }
-.field textarea{ resize:vertical; min-height:88px; }
+.field textarea{ resize:vertical; min-height:90px; }
 .field input:focus,.field select:focus,.field textarea:focus{
-  border-color:var(--gold); outline:0; box-shadow:0 0 0 3px rgba(212,175,55,.22);
+  border-color:var(--gold); outline:0; box-shadow:0 0 0 3px rgba(212,175,55,.2);
 }
 
-/* =======================================
-   SELECTS (global)
-======================================= */
-select, input[type="text"], input[type="number"]{
-  border-radius:12px; /* keep consistent with fields */
-}
+/* global selects (arrow icon) */
 select{
   appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231C3D5A' stroke-width='2' fill='none'/%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position:right 1rem center; background-size:12px;
 }
 
-/* =======================================
-   TABLES
-======================================= */
+/* ======================================
+   TABLES (flat, legible)
+====================================== */
 table{
-  width:100%; border-collapse:collapse; margin-top:.7rem;
-  background:var(--card); border-radius:18px; overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  width:100%; border-collapse:separate; border-spacing:0; margin-top:.6rem;
+  background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+  box-shadow:var(--shadow-sm);
 }
-th,td{ border:1px solid #EEF4F6; padding:.95rem; text-align:center; }
+th,td{ padding:.85rem; text-align:center; border-bottom:1px solid var(--line); }
 th{
-  background:var(--thead);
-  font-weight:800; font-size:1rem; color:#21425e;
+  background:var(--thead); font-weight:800; color:#21425e;
+  border-bottom:1px solid var(--line);
 }
-tr:hover td{ background:#F4FBFB; }
+tr:last-child td{ border-bottom:none; }
+tbody tr:hover td{ background:#F4FBFB; }
 
-/* compact helper (if you ever need) */
+/* compact helper (optional) */
 .table--compact th,.table--compact td{ padding:.6rem .7rem; }
 
-/* =======================================
+/* ======================================
    CHARTS
-======================================= */
+====================================== */
 canvas{
-  background:#fff; border-radius:18px;
-  box-shadow:var(--shadow-md);
-  padding:1rem; margin-top:1rem;
-  transition:box-shadow .25s ease, transform .25s ease;
+  background:#fff; border:1px solid var(--line);
+  border-radius:14px; padding:12px; margin-top:12px; box-shadow:var(--shadow-sm);
 }
-canvas:hover{ box-shadow:var(--shadow-lg); transform:translateY(-2px); }
-.chart-bar{ background-color:var(--brand) !important; }
 
-/* =======================================
-   BUTTONS / ACTIONS
-======================================= */
+/* ======================================
+   BUTTONS
+====================================== */
 .actions{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
 .btn{
-  padding:12px 16px; border-radius:12px; border:1px solid var(--line);
+  padding:11px 14px; border-radius:10px; border:1px solid var(--line);
   background:#fff; color:var(--ink); font-weight:800; cursor:pointer;
-  box-shadow:var(--shadow-sm); transition:transform .18s ease, box-shadow .18s ease;
+  box-shadow:var(--shadow-sm); transition:background .15s ease, box-shadow .15s ease, transform .15s ease;
 }
 .btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
 .btn.ghost{ background:transparent; border-color:var(--brand); color:var(--brand); }
@@ -181,75 +166,67 @@ canvas:hover{ box-shadow:var(--shadow-lg); transform:translateY(-2px); }
 .btn:active{ transform:translateY(0); }
 .btn:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
 
-/* =======================================
+/* ======================================
    RESULT STRIP
-======================================= */
+====================================== */
 .result{ margin-top:12px; }
 .result-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
-.k{ color:var(--muted); font-size:.85rem; }
-.v{ font-size:1.12rem; font-weight:800; }
+.k{ color:var(--muted); font-size:.86rem; }
+.v{ font-size:1.08rem; font-weight:800; color:#163248; }
 
-/* =======================================
+/* ======================================
    COMMUNITY FEED
-======================================= */
+====================================== */
 .community-wrap{ margin-top:16px; }
 .feed{ display:grid; gap:10px; }
 .feed-item{
-  border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:#fff;
-  box-shadow:var(--shadow-sm);
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  padding:10px 12px; box-shadow:var(--shadow-sm);
 }
 .feed-top{ font-weight:800; color:#163043; }
 .feed-mid{ color:var(--ink-2); margin-top:2px; }
-.feed-notes{ color:#445; font-style:italic; margin-top:4px; }
+.feed-notes{ color:#465; font-style:italic; margin-top:4px; }
 .feed-time{ color:var(--muted); font-size:.85rem; margin-top:6px; }
 
-/* =======================================
-   CTA
-======================================= */
+/* ======================================
+   CTA (clean)
+====================================== */
 .cta{
   background:linear-gradient(100deg, var(--ink), var(--brand));
-  color:#fff; text-align:center; border-radius:20px; padding:22px;
-  box-shadow:var(--shadow-lg);
+  color:#fff; text-align:center; border-radius:14px; padding:18px;
+  box-shadow:var(--shadow-md);
 }
-.cta h3{ margin:0 0 6px; letter-spacing:.2px; }
-.cta-actions{ display:flex; gap:12px; justify-content:center; margin-top:10px; }
+.cta h3{ margin:0 0 6px; }
 
-/* =======================================
+/* ======================================
    FOOTER
-======================================= */
+====================================== */
 footer{
-  background:linear-gradient(115deg, var(--ink) 0%, var(--brand) 100%);
-  color:#fff; text-align:center; padding:1.4rem 1rem; margin-top:2rem; font-size:.95rem;
-  box-shadow:var(--shadow-sm);
+  background:linear-gradient(120deg, var(--ink), var(--brand));
+  color:#fff; text-align:center; padding:1.2rem 1rem; margin-top:2rem; font-size:.95rem;
 }
 
-/* =======================================
-   META / MISC
-======================================= */
-.last-updated{ color:#8a97a3; font-size:.9rem; margin-top:.5rem; text-align:right; font-style:italic; }
+/* ======================================
+   META
+====================================== */
+.last-updated{ color:#8b97a3; font-size:.9rem; margin-top:.5rem; text-align:right; font-style:italic; }
 .chartjs-tooltip{
-  font-size:.88rem; background:rgba(0,0,0,.82); color:#fff;
-  padding:8px 10px; border-radius:8px; pointer-events:none; transform:translateY(-2px);
+  font-size:.86rem; background:rgba(0,0,0,.8); color:#fff;
+  padding:6px 10px; border-radius:8px; pointer-events:none;
 }
 
 /* Utilities */
 .hide{ display:none !important; }
 
-/* Motion safety */
-@media (prefers-reduced-motion:reduce){
-  *{ transition:none !important; animation:none !important; }
-}
-
-/* =======================================
+/* ======================================
    RESPONSIVE
-======================================= */
+====================================== */
 @media (max-width: 860px){
   .result-grid{ grid-template-columns:1fr 1fr; }
 }
 @media (max-width: 640px){
-  nav{ gap:1.1rem; }
   .grid-2,.grid-3{ grid-template-columns:1fr; }
   .result-grid{ grid-template-columns:1fr; }
-  .market-logo{ max-width:124px; }
-  header{ padding:1.8rem .8rem 1.6rem; }
+  .market-logo{ max-width:120px; }
+  header{ padding:1.5rem .8rem 1.3rem; }
 }
