@@ -1,308 +1,329 @@
-// ===== Config =====
-const API_URL = "https://api.sheetbest.com/sheets/5ac0ae3c-c8d3-4f90-a9af-18198287e688";
-
-// ===== State =====
+// ✅ Fetch live JSON from Google Sheets (via Sheet.best)
 let sheetData = [];
-let priceChartInstance = null;
-let briquetteChartInstance = null;
 
-// ===== Helpers =====
-const fmt = (n) => (isNaN(n) || n === null || n === undefined ? "--" : Number(n).toLocaleString("en-IN"));
-const el = (id) => document.getElementById(id);
+const loadData = async () => {
+  const res = await fetch("https://api.sheetbest.com/sheets/ec0fea37-5ac0-45b5-a7c9-cda68fcb04bf");
+  sheetData = await res.json();
 
-// ===== Boot =====
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadData();
-  hydrateUI();
-  bindFreightCalc();
-  bindSubmitPrice();
-});
+  const structured = {};
+  const pelletLabels = new Set();
+  const briquetteLabels = new Set();
 
-// ===== Load data =====
-async function loadData() {
-  try {
-    const res = await fetch(API_URL);
-    sheetData = await res.json();
-  } catch (e) {
-    console.error("Failed fetching data:", e);
-    sheetData = [];
+  for (const row of sheetData) {
+    const location = row.State?.trim();
+    const material = row.Material?.trim();
+    const type = row.Type?.trim();
+    const price = parseInt(row.Week?.toString().replace(/,/g, ''));
+    const trend = [
+      parseInt(row.Year), 
+      parseInt(row["6 Month"]), 
+      parseInt(row.Month), 
+      parseInt(row.Week)
+    ];
+
+    if (!structured[location]) {
+      structured[location] = {
+        materials: { pellets: {}, briquettes: {} }
+      };
+    }
+
+    const formatted = { price, trend };
+
+    if (type.toLowerCase() === "pellet") {
+      structured[location].materials.pellets[material] = formatted;
+      pelletLabels.add(material);
+    } else {
+      structured[location].materials.briquettes[material] = formatted;
+      briquetteLabels.add(material);
+    }
   }
-}
 
-// ===== UI + Tables + Charts =====
-function hydrateUI() {
-  const states = [...new Set(sheetData.map(r => (r.State || "").trim()).filter(Boolean))].sort();
-  // populate location select
-  const loc = el("locationSelect");
-  loc.innerHTML = states.map(s => `<option value="${s}">${s}</option>`).join("");
-  // default location
-  const hasAverage = states.find(s => s.toUpperCase() === "AVERAGE");
-  loc.value = hasAverage ? "AVERAGE" : states[0];
-  loc.addEventListener("change", () => {
-    renderTables(loc.value);
-    renderCharts(loc.value);
+  return { structured, pelletLabels, briquetteLabels };
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const locationSelect = document.getElementById("locationSelect");
+  const materialSelect = document.getElementById("materialSelect");
+  const briquetteSelect = document.getElementById("briquetteSelect");
+  const materialTable = document.getElementById("materialTable");
+  const briquetteTable = document.getElementById("briquetteTable");
+  const ctx = document.getElementById("priceChart").getContext("2d");
+  const briquetteCtx = document.getElementById("briquetteChart").getContext("2d");
+
+  const { structured: dataset, pelletLabels, briquetteLabels } = await loadData();
+   pelletLabels.delete("GLOBAL");
+   briquetteLabels.delete("GLOBAL");
+  const locations = Object.keys(dataset).filter(loc => loc.toUpperCase() !== "GLOBAL");
+
+  locations.forEach(loc => {
+    const opt = document.createElement("option");
+    opt.value = loc;
+    opt.textContent = loc;
+    locationSelect.appendChild(opt);
   });
 
-  // populate material dropdowns
-  const pelletTypes = [...new Set(sheetData.filter(r => (r.Type||"").toLowerCase()==="pellet").map(r => r.Material).filter(Boolean))];
-  const briqTypes   = [...new Set(sheetData.filter(r => (r.Type||"").toLowerCase()==="briquette").map(r => r.Material).filter(Boolean))];
-
-  el("materialSelect").innerHTML  = pelletTypes.map(m => `<option>${m}</option>`).join("");
-  el("briquetteSelect").innerHTML = briqTypes.map(m => `<option>${m}</option>`).join("");
-
-  // submit price state list
-  el("sp_state").innerHTML = states.map(s => `<option>${s}</option>`).join("");
-
-  // initial render
-  renderTables(loc.value);
-  renderCharts(loc.value);
-
-  // timestamps
-  el("lastUpdated").textContent = "Last updated: " + new Date().toLocaleString("en-IN");
-  el("pelletTimestamp").textContent = new Date().toLocaleString("en-IN");
-  el("briquetteTimestamp").textContent = new Date().toLocaleString("en-IN");
-
-  // hydrate community feed
-  renderCommunityFeed();
-}
-
-function renderTables(location) {
-  // Build pellet & briquette tables for the location
-  const locRows = sheetData.filter(r => (r.State||"").trim() === location);
-
-  const pellets = locRows.filter(r => (r.Type||"").toLowerCase() === "pellet");
-  const briqs   = locRows.filter(r => (r.Type||"").toLowerCase() === "briquette");
-
-  const makeTable = (rows) => {
-    if (!rows.length) return "<tr><td>No data</td></tr>";
-    const header = `
-      <tr>
-        <th>Material</th>
-        <th>Price (₹/ton)</th>
-        <th>Ash %</th>
-        <th>Moisture %</th>
-        <th>Kcal/kg</th>
-        <th></th>
-      </tr>`;
-    const body = rows.map(r => `
-      <tr>
-        <td>${r.Material || "-"}</td>
-        <td>${fmt(r.Price)}</td>
-        <td>${r.Ash || "-"}</td>
-        <td>${r.Moisture || "-"}</td>
-        <td>${r.Kcal || "-"}</td>
-        <td><button class="btn tiny buy-btn" data-material="${r.Material||""}" data-price="${r.Price||""}">Book Now</button></td>
-      </tr>`).join("");
-    return header + body;
-  };
-
-  el("materialTable").innerHTML  = makeTable(pellets);
-  el("briquetteTable").innerHTML = makeTable(briqs);
-
-  // attach quick "Book Now" (routes to WhatsApp)
-  document.querySelectorAll(".buy-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const material = btn.dataset.material || "Pellet";
-      const price = btn.dataset.price || "";
-      const msg = encodeURIComponent(`Hi Peltra, I want to book ${material} at current market rate ${price ? "₹"+price+"/ton" : ""}. Please call back.`);
-      window.open(`https://wa.me/919999999999?text=${msg}`, "_blank");
-    });
+  pelletLabels.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    materialSelect.appendChild(opt);
   });
-}
 
-function renderCharts(location) {
-  const labels = ["Year", "6 Months", "Month", "Week"];
+  briquetteLabels.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    briquetteSelect.appendChild(opt);
+  });
 
-  const firstPellet = sheetData.find(r => (r.State||"").trim() === location && (r.Type||"").toLowerCase()==="pellet");
-  const firstBriq   = sheetData.find(r => (r.State||"").trim() === location && (r.Type||"").toLowerCase()==="briquette");
-
-  const parseVals = (row) => ([
-    parseInt(row?.Year || 0, 10),
-    parseInt(row?.["6 Month"] || row?.["6 Months"] || row?.["6mo"] || 0, 10),
-    parseInt(row?.Month || 0, 10),
-    parseInt(row?.Week || 0, 10)
-  ]);
-
-  const pelletVals = firstPellet ? parseVals(firstPellet) : [0,0,0,0];
-  const briqVals   = firstBriq   ? parseVals(firstBriq)   : [0,0,0,0];
-
-  if (priceChartInstance) priceChartInstance.destroy();
-  if (briquetteChartInstance) briquetteChartInstance.destroy();
-
-  const ctx1 = document.getElementById("priceChart");
-  priceChartInstance = new Chart(ctx1, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: "Pellet Price",
-        data: pelletVals,
-        borderColor: "#1C3D5A",
-        backgroundColor: "rgba(29, 77, 106, 0.08)",
-        tension: 0.3
-      }]
-    },
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: ['Year', '6 Months', 'Month', 'Week'], datasets: [{ label: '', data: [] }] },
     options: {
       responsive: true,
-      plugins: { legend: { display: false }},
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: ctx => `₹${ctx.parsed.y.toLocaleString()}`
+          }
+        }
+      },
       scales: {
         y: {
-          ticks: { callback: (v) => "₹" + Number(v).toLocaleString("en-IN") }
+          ticks: {
+            callback: val => `₹${val.toLocaleString()}`
+          }
         }
       }
     }
   });
 
-  const ctx2 = document.getElementById("briquetteChart");
-  briquetteChartInstance = new Chart(ctx2, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: "Briquette Price",
-        data: briqVals,
-        borderColor: "#FFA500",
-        backgroundColor: "rgba(255,165,0,0.12)",
-        tension: 0.3
-      }]
-    },
+  const briquetteChart = new Chart(briquetteCtx, {
+    type: 'line',
+    data: { labels: ['Year', '6 Months', 'Month', 'Week'], datasets: [{ label: '', data: [] }] },
     options: {
       responsive: true,
-      plugins: { legend: { display: false }},
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: ctx => `₹${ctx.parsed.y.toLocaleString()}`
+          }
+        }
+      },
       scales: {
         y: {
-          ticks: { callback: (v) => "₹" + Number(v).toLocaleString("en-IN") }
+          ticks: {
+            callback: val => `₹${val.toLocaleString()}`
+          }
         }
       }
     }
   });
 
-  // Change-by-material dropdowns
-  document.getElementById("materialSelect").onchange = (e) => {
-    const mat = e.target.value;
-    const row = sheetData.find(r => (r.State||"").trim() === location && (r.Type||"").toLowerCase()==="pellet" && r.Material === mat);
-    const vals = row ? parseVals(row) : [0,0,0,0];
-    priceChartInstance.data.datasets[0].data = vals;
-    priceChartInstance.update();
-  };
+  function renderTable(locationKey) {
+    const data = dataset[locationKey].materials.pellets;
+    materialTable.innerHTML = `<tr><th>Pellet Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
+      Object.entries(data).map(([type, { price, trend }]) => {
+        const trendHTML = trend.map(val =>
+          `<span style="display:inline-block;width:5px;height:${10 + val / 100}px;background:#52b788;margin:0 1px;"></span>`).join('');
+        return `<tr><td>${type}</td><td><strong>₹${price.toLocaleString()}</strong></td><td>${trendHTML}</td></tr>`;
+      }).join('');
+  }
 
-  document.getElementById("briquetteSelect").onchange = (e) => {
-    const mat = e.target.value;
-    const row = sheetData.find(r => (r.State||"").trim() === location && (r.Type||"").toLowerCase()==="briquette" && r.Material === mat);
-    const vals = row ? parseVals(row) : [0,0,0,0];
-    briquetteChartInstance.data.datasets[0].data = vals;
-    briquetteChartInstance.update();
-  };
+  function renderBriquetteTable(locationKey) {
+    const data = dataset[locationKey].materials.briquettes;
+    briquetteTable.innerHTML = `<tr><th>Briquette Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
+      Object.entries(data).map(([type, { price, trend }]) => {
+        const trendHTML = trend.map(val =>
+          `<span style="display:inline-block;width:5px;height:${10 + val / 100}px;background:#6a4f2d;margin:0 1px;"></span>`).join('');
+        return `<tr><td>${type}</td><td><strong>₹${price.toLocaleString()}</strong></td><td>${trendHTML}</td></tr>`;
+      }).join('');
+  }
+
+  function updateChart(locationKey, type, chartObj, isPellet = true) {
+    const source = isPellet ? dataset[locationKey].materials.pellets : dataset[locationKey].materials.briquettes;
+    const trend = source[type]?.trend || [];
+    chartObj.data.datasets[0].label = type;
+    chartObj.data.datasets[0].data = trend;
+    chartObj.update();
+
+    updateSpecs(type, isPellet);
+  }
+
+  function updateSpecs(material, isPellet = true) {
+    const specContainerId = isPellet ? "pelletSpecs" : "briquetteSpecs";
+    const timestampId = isPellet ? "pelletTimestamp" : "briquetteTimestamp";
+
+    const globalInfo = sheetData.find(row =>
+      row.State?.trim().toLowerCase() === "global" &&
+      row.Material?.trim() === material &&
+      row.Type?.trim().toLowerCase().includes(isPellet ? "pellet" : "briquette")
+    );
+
+    if (globalInfo) {
+      const container = document.getElementById(specContainerId);
+      container.innerHTML = `
+     
+       <p><strong>Ash:</strong> ${globalInfo.Ash || '--'}%</p>
+       <p><strong>Moisture:</strong> ${globalInfo.Moisture || '--'}%</p>
+        <p><strong>Kcal Value:</strong> ${globalInfo.Kcal || '--'}</p>
+      `;
+    }
+
+    const lastRow = sheetData.find(row => row["Last Updated"]);
+    if (lastRow) {
+      document.getElementById(timestampId).textContent = lastRow["Last Updated"];
+    }
+  }
+  function updateMaterialDropdowns(locationKey) {
+  materialSelect.innerHTML = "";
+  briquetteSelect.innerHTML = "";
+
+  const pelletMaterials = Object.keys(dataset[locationKey].materials.pellets);
+  pelletMaterials.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    materialSelect.appendChild(opt);
+  });
+
+  const briquetteMaterials = Object.keys(dataset[locationKey].materials.briquettes);
+  briquetteMaterials.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    briquetteSelect.appendChild(opt);
+  });
 }
 
-// ===== Freight Calculator =====
-function bindFreightCalc() {
-  el("fc_calc").addEventListener("click", () => {
-    const km = Number(el("fc_km").value);
-    const tons = Number(el("fc_tons").value);
-    const ratePerKm = Number(el("fc_ratepkm").value || 0);
-    const truckCap = Number(el("fc_truck").value || 20);
-    const exFactory = Number(el("fc_exfactory").value || 0);
+  function refreshAll() {
+  const loc = locationSelect.value;
+  updateMaterialDropdowns(loc); // ✅ New: dynamically update dropdowns
+  renderTable(loc);
+  renderBriquetteTable(loc);
+
+  // ✅ Auto-select first material in each dropdown after update
+  const defaultPellet = materialSelect.options[0]?.value;
+  const defaultBriquette = briquetteSelect.options[0]?.value;
+
+  if (defaultPellet) updateChart(loc, defaultPellet, chart, true);
+  if (defaultBriquette) updateChart(loc, defaultBriquette, briquetteChart, false);
+}
+
+  locationSelect.addEventListener("change", refreshAll);
+  materialSelect.addEventListener("change", () => updateChart(locationSelect.value, materialSelect.value, chart, true));
+  briquetteSelect.addEventListener("change", () => updateChart(locationSelect.value, briquetteSelect.value, briquetteChart, false));
+
+  locationSelect.value = locations[0];
+  materialSelect.value = [...pelletLabels][0];
+  briquetteSelect.value = [...briquetteLabels][0];
+
+  refreshAll();
+
+// ==============================
+// FREIGHT CALCULATOR (standalone)
+// ==============================
+(function () {
+  const byId = (id) => document.getElementById(id);
+  const fmt = (n) => (isNaN(n) || n == null ? "--" : Number(n).toLocaleString("en-IN"));
+
+  const calcBtn  = byId("fc_calc");
+  const resetBtn = byId("fc_reset");
+  if (!calcBtn || !resetBtn) return; // calculator not placed on this page
+
+  calcBtn.addEventListener("click", () => {
+    const km        = Number(byId("fc_km").value);
+    const tons      = Number(byId("fc_tons").value);
+    const ratePerKm = Number(byId("fc_ratepkm").value || 0);
+    const truckCap  = Number(byId("fc_truck").value || 20);
+    const exFactory = Number(byId("fc_exfactory").value || 0);
 
     if (!km || !tons || !ratePerKm) {
-      el("fc_result").innerHTML = `<div class="error">Please fill Distance, Quantity and Base ₹/km.</div>`;
+      byId("fc_result").innerHTML = `<div class="error">Please fill Distance, Quantity and Base ₹/km.</div>`;
       return;
     }
 
-    // Simple model:
-    // Freight = ratePerKm * km (+ light utilization adjustment for partial load)
-    // Per-ton freight = Freight / tons (if tons > truckCap, assume multi-trips proportionally)
-    // Landed per ton = exFactory + perTonFreight (if exFactory given)
-
-    const tripsNeeded = Math.max(1, Math.ceil(tons / truckCap));
-    const freightTotal = ratePerKm * km * tripsNeeded;
+    const tripsNeeded   = Math.max(1, Math.ceil(tons / truckCap));
+    const freightTotal  = ratePerKm * km * tripsNeeded;
     const perTonFreight = freightTotal / tons;
-    const landedPerTon = exFactory ? (exFactory + perTonFreight) : null;
+    const landedPerTon  = exFactory ? (exFactory + perTonFreight) : null;
 
-    el("fc_result").innerHTML = `
+    byId("fc_result").innerHTML = `
       <div class="result-grid">
-        <div>
-          <div class="k">Trips Needed</div>
-          <div class="v">${tripsNeeded}</div>
-        </div>
-        <div>
-          <div class="k">Total Freight</div>
-          <div class="v">₹${fmt(freightTotal)}</div>
-        </div>
-        <div>
-          <div class="k">Freight / ton</div>
-          <div class="v">₹${fmt(perTonFreight)}</div>
-        </div>
-        <div>
-          <div class="k">Landed / ton</div>
-          <div class="v">${landedPerTon ? "₹" + fmt(landedPerTon) : "<span class='muted'>Enter Ex-Factory to compute</span>"}</div>
-        </div>
+        <div><div class="k">Trips Needed</div><div class="v">${tripsNeeded}</div></div>
+        <div><div class="k">Total Freight</div><div class="v">₹${fmt(freightTotal)}</div></div>
+        <div><div class="k">Freight / ton</div><div class="v">₹${fmt(perTonFreight)}</div></div>
+        <div><div class="k">Landed / ton</div><div class="v">${landedPerTon ? "₹" + fmt(landedPerTon) : "<span class='muted'>Enter Ex-Factory to compute</span>"}</div></div>
       </div>
     `;
   });
 
-  el("fc_reset").addEventListener("click", () => {
-    ["fc_source","fc_destination","fc_km","fc_tons","fc_ratepkm","fc_exfactory"].forEach(id => el(id).value = "");
-    el("fc_truck").value = "20";
-    el("fc_result").innerHTML = "";
+  resetBtn.addEventListener("click", () => {
+    ["fc_source","fc_destination","fc_km","fc_tons","fc_ratepkm","fc_exfactory"].forEach(id => { const el = byId(id); if (el) el.value = ""; });
+    const t = byId("fc_truck"); if (t) t.value = "20";
+    const r = byId("fc_result"); if (r) r.innerHTML = "";
   });
-}
+})();
 
-// ===== Submit Your Own Price (local only) =====
-function bindSubmitPrice() {
-  el("sp_submit").addEventListener("click", () => {
+// =======================================
+// SUBMIT YOUR OWN PRICE (local only)
+// =======================================
+(function () {
+  const $ = (id) => document.getElementById(id);
+  if (!$("#submitPrice")) return; // block not on page
+
+  // Try to hydrate states from your existing #locationSelect
+  (function hydrateStates() {
+    const dst = $("#sp_state");
+    if (!dst) return;
+    const src = document.getElementById("locationSelect");
+    if (src && src.options && src.options.length) {
+      dst.innerHTML = Array.from(src.options).map(o => `<option>${o.value || o.text}</option>`).join("");
+    } else {
+      // Fallback minimal list so UI isn't empty
+      dst.innerHTML = ["AVERAGE","NCR","Punjab","Haryana","Rajasthan"].map(s => `<option>${s}</option>`).join("");
+    }
+  })();
+
+  const fmt = (n) => (isNaN(n) || n == null ? "--" : Number(n).toLocaleString("en-IN"));
+  function renderFeed() {
+    const feed = $("#sp_feed");
+    if (!feed) return;
+    const items = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
+    if (!items.length) { feed.innerHTML = `<div class="muted">No community submissions yet.</div>`; return; }
+    feed.innerHTML = items.slice(0, 10).map(x => {
+      const dt = new Date(x.ts).toLocaleString("en-IN");
+      return `
+        <div class="feed-item">
+          <div class="feed-top"><strong>${x.material}</strong> • ₹${fmt(x.price)}/ton</div>
+          <div class="feed-mid">${x.city ? x.city + ", " : ""}${x.state}${x.qty ? ` • Qty: ${x.qty}t` : ""}</div>
+          ${x.notes ? `<div class="feed-notes">${x.notes}</div>` : ""}
+          <div class="feed-time">${dt}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  $("#sp_submit").addEventListener("click", () => {
     const payload = {
       ts: Date.now(),
-      state: el("sp_state").value || "",
-      material: el("sp_material").value || "",
-      price: Number(el("sp_price").value || 0),
-      qty: Number(el("sp_qty").value || 0),
-      city: el("sp_city").value || "",
-      notes: el("sp_notes").value || ""
+      state: $("#sp_state").value || "",
+      material: $("#sp_material").value || "",
+      price: Number($("#sp_price").value || 0),
+      qty: Number($("#sp_qty").value || 0),
+      city: $("#sp_city").value || "",
+      notes: $("#sp_notes").value || ""
     };
-
     if (!payload.state || !payload.material || !payload.price) {
       alert("Please fill State, Material and Price.");
       return;
     }
-
-    // Save to localStorage
     const existing = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
     existing.unshift(payload);
     localStorage.setItem("peltra_submissions", JSON.stringify(existing.slice(0, 20)));
-
-    // UI
-    renderCommunityFeed();
-
-    // Clear minimal fields
-    el("sp_price").value = "";
-    el("sp_qty").value = "";
-    el("sp_city").value = "";
-    el("sp_notes").value = "";
+    renderFeed();
+    ["sp_price","sp_qty","sp_city","sp_notes"].forEach(id => { const el = $("#"+id); if (el) el.value = ""; });
   });
-}
 
-function renderCommunityFeed() {
-  const feed = el("sp_feed");
-  const rows = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
-  if (!rows.length) {
-    feed.innerHTML = `<div class="muted">No community submissions yet.</div>`;
-    return;
-  }
-  feed.innerHTML = rows.slice(0, 10).map(x => {
-    const dt = new Date(x.ts).toLocaleString("en-IN");
-    return `
-      <div class="feed-item">
-        <div class="feed-top">
-          <strong>${x.material}</strong> • ₹${fmt(x.price)}/ton
-        </div>
-        <div class="feed-mid">
-          <span>${x.city ? x.city + ", " : ""}${x.state}</span>
-          ${x.qty ? ` • Qty: ${x.qty}t` : ""}
-        </div>
-        ${x.notes ? `<div class="feed-notes">${x.notes}</div>` : ""}
-        <div class="feed-time">${dt}</div>
-      </div>
-    `;
-  }).join("");
-}
+  renderFeed();
+})();
