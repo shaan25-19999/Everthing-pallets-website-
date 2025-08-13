@@ -266,58 +266,60 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // =======================================
 // SUBMIT YOUR OWN PRICE (local only)
-// =======================================
-(function () {
-  const $ = (id) => document.getElementById(id);
-  if (!$("#submitPrice")) return; // block not on page
+// Netlify Forms + AJAX submit (no reload)
+(() => {
+  const form = document.querySelector('form[name="price-submissions"]');
+  const feed = document.getElementById('submitFeed');
+  if (!form || !feed) return;
 
-  const fmt = (n) => (isNaN(n) || n == null ? "--" : Number(n).toLocaleString("en-IN"));
+  const toURLEncoded = (data) =>
+    Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
 
-  function renderFeed() {
-    const feed = $("#sp_feed");
-    if (!feed) return;
-    const items = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
-    if (!items.length) {
-      feed.innerHTML = `<div class="muted">No community submissions yet.</div>`;
-      return;
-    }
-    feed.innerHTML = items.slice(0, 10).map(x => {
-      const dt = new Date(x.ts).toLocaleString("en-IN");
-      return `
-        <div class="feed-item">
-          <div class="feed-top"><strong>${x.material}</strong> • ₹${fmt(x.price)}/ton</div>
-          <div class="feed-mid">${x.city ? x.city : ""}${x.qty ? ` • Qty: ${x.qty}t` : ""}</div>
-          ${x.notes ? `<div class="feed-notes">${x.notes}</div>` : ""}
-          <div class="feed-time">${dt}</div>
-        </div>
-      `;
-    }).join("");
+  function addToFeed(item){
+    const card = document.createElement('div');
+    card.className = 'feed-item';
+    card.innerHTML = `
+      <div class="feed-top">${item.material} • ₹${Number(item.price).toLocaleString('en-IN')}/ton</div>
+      <div class="feed-mid">${item.city} • ${item.quantity} tons</div>
+      ${item.notes ? `<div class="feed-notes">${item.notes}</div>` : ''}
+      <div class="feed-time">${new Date().toLocaleString('en-IN')}</div>
+    `;
+    feed.prepend(card);
   }
 
-  $("#sp_submit").addEventListener("click", () => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Gather values
     const payload = {
-      ts: Date.now(),
-      material: $("#sp_material").value.trim(),
-      price: Number($("#sp_price").value || 0),
-      qty: Number($("#sp_qty").value || 0),
-      city: $("#sp_city").value.trim(),
-      notes: $("#sp_notes").value.trim()
+      "form-name": form.getAttribute("name"), // required by Netlify
+      material: form.material.value.trim(),
+      price: form.price.value,
+      quantity: form.quantity.value,
+      city: form.city.value.trim(),
+      notes: form.notes.value.trim(),
     };
 
     if (!payload.material || !payload.price) {
-      alert("Please fill Material and Price.");
+      alert("Please enter Material and Price.");
       return;
     }
 
-    const existing = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
-    existing.unshift(payload);
-    localStorage.setItem("peltra_submissions", JSON.stringify(existing.slice(0, 20)));
-    renderFeed();
-    ["sp_material", "sp_price", "sp_qty", "sp_city", "sp_notes"].forEach(id => {
-      const el = $("#" + id);
-      if (el) el.value = "";
-    });
-  });
+    try {
+      // Post to Netlify Forms endpoint (same page)
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: toURLEncoded(payload)
+      });
 
-  renderFeed();
+      // Optimistic local feed
+      addToFeed(payload);
+      form.reset();
+      form.material.focus();
+    } catch (err) {
+      console.error(err);
+      alert("Could not submit right now. Please try again.");
+    }
+  });
 })();
