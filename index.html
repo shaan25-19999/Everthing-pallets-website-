@@ -166,9 +166,11 @@
     <h3>Submit Your Own Price</h3>
     <p class="muted">Keep the market sharp. Submissions are reviewed before inclusion.</p>
 
+    <!-- ✅ Netlify-form enabled -->
     <form name="price-submissions" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-      <!-- Netlify needs these two hidden inputs -->
-      <input type="hidden" name="form-name" value="price-submissions">
+      <!-- Netlify requires this hidden input to match the form name -->
+      <input type="hidden" name="form-name" value="price-submissions" />
+      <!-- Honeypot (spam trap) -->
       <p style="display:none;">
         <label>Don’t fill this out: <input name="bot-field" /></label>
       </p>
@@ -186,12 +188,12 @@
 
         <div class="field">
           <label for="spQty">Quantity (tons)</label>
-          <input id="spQty" name="quantity" type="number" inputmode="numeric" placeholder="e.g., 40" required />
+          <input id="spQty" name="quantity" type="number" inputmode="numeric" placeholder="e.g., 40" />
         </div>
 
         <div class="field">
           <label for="spCity">City / Cluster</label>
-          <input id="spCity" name="city" type="text" placeholder="e.g., Yamunanagar" required />
+          <input id="spCity" name="city" type="text" placeholder="e.g., Yamunanagar" />
         </div>
       </div>
 
