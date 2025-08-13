@@ -162,50 +162,53 @@
 <!-- ========================= -->
 <!-- SUBMIT YOUR OWN PRICE (local only) -->
 <!-- ========================= -->
-<section class="section card" id="submitPrice">
-  <h3>Submit Your Own Price</h3>
-  <p class="muted">Keep the market sharp. Submissions are reviewed before inclusion.</p>
+<!-- SUBMIT YOUR OWN PRICE -->
+<section class="section">
+  <div class="card" id="submit-price">
+    <h3>Submit Your Own Price</h3>
+    <p class="muted">Keep the market sharp. Submissions are reviewed before inclusion.</p>
 
-  <div class="grid-3">
-    <div class="field">
-      <label>State/Region</label>
-      <!-- Will auto-fill from #locationSelect if present; else you can type -->
-      <select id="sp_state"></select>
-    </div>
-    <div class="field">
-      <label>Material</label>
-      <select id="sp_material">
-        <option>Pellet – Rice Husk</option>
-        <option>Pellet – Sawdust</option>
-        <option>Pellet – Mixed Agro</option>
-        <option>Briquette – Mustard</option>
-        <option>Briquette – Mixed Agro</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Price (₹/ton)</label>
-      <input id="sp_price" type="number" min="1" placeholder="e.g., 7700" />
-    </div>
-    <div class="field">
-      <label>Quantity (tons)</label>
-      <input id="sp_qty" type="number" min="1" placeholder="e.g., 40" />
-    </div>
-    <div class="field">
-      <label>City / Cluster</label>
-      <input id="sp_city" type="text" placeholder="e.g., Yamunanagar" />
-    </div>
-    <div class="field">
-      <label>Notes (optional)</label>
-      <input id="sp_notes" type="text" placeholder="e.g., ex-factory, incl. loading" />
-    </div>
-  </div>
-  <div class="actions">
-    <button id="sp_submit" class="btn primary">Submit Price</button>
-  </div>
+    <form id="submitForm">
+      <div class="grid-2">
+        <!-- ✅ Material is now a text input (was a select) -->
+        <div class="field">
+          <label for="spMaterial">Material</label>
+          <input id="spMaterial" name="material" type="text" placeholder="e.g., Pellet – Rice Husk" required />
+        </div>
 
-  <div class="community-wrap">
-    <h4>Community Prices (recent)</h4>
-    <div id="sp_feed" class="feed"></div>
+        <div class="field">
+          <label for="spPrice">Price (₹/ton)</label>
+          <input id="spPrice" name="price" type="number" inputmode="numeric" placeholder="e.g., 7700" required />
+        </div>
+
+        <div class="field">
+          <label for="spQty">Quantity (tons)</label>
+          <input id="spQty" name="quantity" type="number" inputmode="numeric" placeholder="e.g., 40" required />
+        </div>
+
+        <div class="field">
+          <label for="spCity">City / Cluster</label>
+          <input id="spCity" name="city" type="text" placeholder="e.g., Yamunanagar" required />
+        </div>
+      </div>
+
+      <!-- small note row -->
+      <div class="field" style="margin-top:8px;">
+        <label for="spNotes">Notes (optional)</label>
+        <input id="spNotes" name="notes" type="text" placeholder="e.g., ex‑factory, incl. loading" />
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Submit Price</button>
+        <button type="reset" class="btn ghost">Reset</button>
+      </div>
+
+      <p id="spError" class="error" style="display:none;"></p>
+      <p id="spOk" class="note" style="display:none;">Thanks! We’ve received your submission.</p>
+    </form>
+
+    <h4 style="margin-top:16px;">Community Prices (recent)</h4>
+    <div id="submitFeed" class="feed"></div>
   </div>
 </section>
 
