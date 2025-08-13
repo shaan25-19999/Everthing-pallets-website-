@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   briquetteSelect.value = [...briquetteLabels][0];
 
   refreshAll();
-
+});
 // ==============================
 // FREIGHT CALCULATOR (standalone)
 // ==============================
@@ -264,7 +264,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const r = byId("fc_result"); if (r) r.innerHTML = "";
   });
 })();
-
 // =======================================
 // SUBMIT YOUR OWN PRICE (local only)
 // =======================================
