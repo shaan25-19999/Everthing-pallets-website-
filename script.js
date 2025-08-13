@@ -223,47 +223,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==============================
 // FREIGHT CALCULATOR (standalone)
 // ==============================
-(function () {
-  const byId = (id) => document.getElementById(id);
-  const fmt = (n) => (isNaN(n) || n == null ? "--" : Number(n).toLocaleString("en-IN"));
+// ---------- Freight calculator (simplified) ----------
+function formatINR(n) {
+  return `₹${Number(n).toLocaleString('en-IN')}`;
+}
 
-  const calcBtn  = byId("fc_calc");
-  const resetBtn = byId("fc_reset");
-  if (!calcBtn || !resetBtn) return; // calculator not placed on this page
+function calcFreight() {
+  const d = Number(document.getElementById('fc-distance').value || 0);
+  const qty = Number(document.getElementById('fc-qty').value || 0);
+  const base = Number(document.getElementById('fc-base').value || 0);
 
-  calcBtn.addEventListener("click", () => {
-    const km        = Number(byId("fc_km").value);
-    const tons      = Number(byId("fc_tons").value);
-    const ratePerKm = Number(byId("fc_ratepkm").value || 0);
-    const truckCap  = Number(byId("fc_truck").value || 20);
-    const exFactory = Number(byId("fc_exfactory").value || 0);
+  if (d <= 0 || qty <= 0 || base < 0) {
+    alert('Please enter valid Distance, Quantity, and Freight Base.');
+    return;
+  }
 
-    if (!km || !tons || !ratePerKm) {
-      byId("fc_result").innerHTML = `<div class="error">Please fill Distance, Quantity and Base ₹/km.</div>`;
-      return;
-    }
+  // Total freight = distance × base (₹/km)
+  const totalFreight = d * base;
 
-    const tripsNeeded   = Math.max(1, Math.ceil(tons / truckCap));
-    const freightTotal  = ratePerKm * km * tripsNeeded;
-    const perTonFreight = freightTotal / tons;
-    const landedPerTon  = exFactory ? (exFactory + perTonFreight) : null;
+  // Freight per ton
+  const perTon = totalFreight / qty;
 
-    byId("fc_result").innerHTML = `
-      <div class="result-grid">
-        <div><div class="k">Trips Needed</div><div class="v">${tripsNeeded}</div></div>
-        <div><div class="k">Total Freight</div><div class="v">₹${fmt(freightTotal)}</div></div>
-        <div><div class="k">Freight / ton</div><div class="v">₹${fmt(perTonFreight)}</div></div>
-        <div><div class="k">Landed / ton</div><div class="v">${landedPerTon ? "₹" + fmt(landedPerTon) : "<span class='muted'>Enter Ex-Factory to compute</span>"}</div></div>
-      </div>
-    `;
-  });
+  // Show results
+  document.getElementById('fc-total').textContent = formatINR(totalFreight);
+  document.getElementById('fc-perton').textContent = `${formatINR(perTon)}/ton`;
+  document.getElementById('fc-results').hidden = false;
+}
 
-  resetBtn.addEventListener("click", () => {
-    ["fc_source","fc_destination","fc_km","fc_tons","fc_ratepkm","fc_exfactory"].forEach(id => { const el = byId(id); if (el) el.value = ""; });
-    const t = byId("fc_truck"); if (t) t.value = "20";
-    const r = byId("fc_result"); if (r) r.innerHTML = "";
-  });
-})();
+function resetFreight() {
+  ['fc-distance','fc-qty','fc-base'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fc-truck').selectedIndex = 0;
+  document.getElementById('fc-results').hidden = true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const calcBtn = document.getElementById('fc-calc');
+  const resetBtn = document.getElementById('fc-reset');
+  if (calcBtn && resetBtn) {
+    calcBtn.addEventListener('click', calcFreight);
+    resetBtn.addEventListener('click', resetFreight);
+  }
+});
 // =======================================
 // SUBMIT YOUR OWN PRICE (local only)
 // =======================================
