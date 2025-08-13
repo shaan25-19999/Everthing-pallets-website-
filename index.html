@@ -114,46 +114,46 @@
 <!-- ========================= -->
 <!-- FREIGHT & LANDED COST CALCULATOR -->
 <!-- ========================= -->
-<section class="section card" id="freightCalculator">
-  <h3>Freight & Landed Cost Calculator</h3>
-  <div class="grid-2">
-    <div class="field">
-      <label>Source (City/Hub)</label>
-      <input id="fc_source" type="text" placeholder="e.g., Ludhiana" />
-    </div>
-    <div class="field">
-      <label>Destination (City/Plant)</label>
-      <input id="fc_destination" type="text" placeholder="e.g., Bhiwadi" />
-    </div>
-    <div class="field">
-      <label>Distance (km)</label>
-      <input id="fc_km" type="number" min="1" placeholder="e.g., 320" />
-    </div>
-    <div class="field">
-      <label>Quantity (tons)</label>
-      <input id="fc_tons" type="number" min="1" placeholder="e.g., 20" />
-    </div>
-    <div class="field">
-      <label>Truck Type</label>
-      <select id="fc_truck">
-        <option value="10">10T (LPT)</option>
-        <option value="16">16T</option>
-        <option value="20" selected>20T</option>
+<!-- Freight & Landed Cost Calculator (Simplified) -->
+<section class="section calc-card" id="freightCalc">
+  <h3>Freight Calculator</h3>
+
+  <div class="calc-grid">
+    <label>
+      <span>Distance (km)</span>
+      <input id="fc-distance" type="number" min="1" placeholder="e.g., 320" required>
+    </label>
+
+    <label>
+      <span>Quantity (tons)</span>
+      <input id="fc-qty" type="number" min="1" placeholder="e.g., 20" required>
+    </label>
+
+    <label>
+      <span>Truck Type</span>
+      <select id="fc-truck">
+        <option value="20">20T</option>
         <option value="24">24T</option>
+        <option value="28">28T</option>
       </select>
-    </div>
-    <div class="field">
-      <label>Freight Base (₹/km)</label>
-      <input id="fc_ratepkm" type="number" min="1" placeholder="e.g., 35" />
-    </div>
-    <div class="field">
-      <label>Ex-Factory Price (₹/ton) <span class="muted">(optional)</span></label>
-      <input id="fc_exfactory" type="number" min="0" placeholder="e.g., 7800" />
-    </div>
+    </label>
+
+    <label>
+      <span>Freight Base (₹/km)</span>
+      <input id="fc-base" type="number" min="0" step="0.01" placeholder="e.g., 35" required>
+    </label>
   </div>
-  <div class="actions">
-    <button id="fc_calc" class="btn primary">Calculate</button>
-    <button id="fc_reset" class="btn">Reset</button>
+
+  <div class="calc-actions">
+    <button id="fc-calc" type="button">Calculate</button>
+    <button id="fc-reset" type="button" class="secondary">Reset</button>
+  </div>
+
+  <div id="fc-results" class="calc-results" hidden>
+    <p><strong>Total Freight:</strong> <span id="fc-total">₹0</span></p>
+    <p><strong>Freight per ton:</strong> <span id="fc-perton">₹0/ton</span></p>
+  </div>
+</section>>Reset</button>
   </div>
   <div id="fc_result" class="result"></div>
   <p class="note">* Estimates only. Actuals depend on lane, loading, wait time & diesel price.</p>
