@@ -266,98 +266,60 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // =======================================
 // SUBMIT YOUR OWN PRICE (local only)
-<!-- put this at the very end of your market.js (or after the form in Market.html) -->
-<script>
+// Netlify Forms + AJAX submit (no reload)
 (() => {
   const form = document.querySelector('form[name="price-submissions"]');
   const feed = document.getElementById('submitFeed');
   if (!form || !feed) return;
 
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const botField = form.querySelector('input[name="bot-field"]');
-
-  // ---- helpers
   const toURLEncoded = (data) =>
-    Object.keys(data)
-      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k]))
-      .join("&");
+    Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
 
-  const inr = (n) => Number(n).toLocaleString('en-IN');
-
-  function addToFeed(item) {
+  function addToFeed(item){
     const card = document.createElement('div');
     card.className = 'feed-item';
     card.innerHTML = `
-      <div class="feed-top"><strong>${item.material}</strong> • ₹${inr(item.price)}/ton</div>
-      <div class="feed-mid">${item.city ? item.city + ' • ' : ''}${item.quantity ? inr(item.quantity) + ' tons' : ''}</div>
+      <div class="feed-top">${item.material} • ₹${Number(item.price).toLocaleString('en-IN')}/ton</div>
+      <div class="feed-mid">${item.city} • ${item.quantity} tons</div>
       ${item.notes ? `<div class="feed-notes">${item.notes}</div>` : ''}
-      <div class="feed-time">${new Date(item.ts || Date.now()).toLocaleString('en-IN')}</div>
+      <div class="feed-time">${new Date().toLocaleString('en-IN')}</div>
     `;
     feed.prepend(card);
   }
 
-  // keep a small recent list locally (handy for instant feedback / offline)
-  function saveLocal(item) {
-    const key = 'peltra_price_submissions';
-    const arr = JSON.parse(localStorage.getItem(key) || '[]');
-    arr.unshift(item);
-    localStorage.setItem(key, JSON.stringify(arr.slice(0, 30)));
-  }
-  function renderLocal() {
-    const key = 'peltra_price_submissions';
-    const arr = JSON.parse(localStorage.getItem(key) || '[]');
-    arr.forEach(addToFeed);
-  }
-  renderLocal();
-
-  // ---- submit
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // simple bot/abuse guard
-    if (botField && botField.value) return;
+    // Gather values
+    const payload = {
+      "form-name": form.getAttribute("name"), // required by Netlify
+      material: form.material.value.trim(),
+      price: form.price.value,
+      quantity: form.quantity.value,
+      city: form.city.value.trim(),
+      notes: form.notes.value.trim(),
+    };
 
-    const material = form.material.value.trim();
-    const price    = Number(form.price.value);
-    const quantity = form.quantity.value ? Number(form.quantity.value) : '';
-    const city     = form.city.value.trim();
-    const notes    = form.notes.value.trim();
-
-    if (!material || !price || isNaN(price) || price <= 0) {
-      alert('Please enter a valid Material and Price.');
+    if (!payload.material || !payload.price) {
+      alert("Please enter Material and Price.");
       return;
     }
 
-    const payload = {
-      "form-name": form.getAttribute('name'), // required by Netlify
-      material, price, quantity, city, notes
-    };
-
-    // UI: prevent double submit
-    const oldLabel = submitBtn ? submitBtn.textContent : '';
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
-
     try {
-      // Post to THIS page (safer than "/")
-      const res = await fetch(window.location.pathname, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      // Post to Netlify Forms endpoint (same page)
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: toURLEncoded(payload)
       });
-      if (!res.ok) throw new Error(`Netlify responded ${res.status}`);
 
-      // optimistic feed + local cache
-      const item = { ...payload, ts: Date.now() };
-      addToFeed(item);
-      saveLocal(item);
-
+      // Optimistic local feed
+      addToFeed(payload);
       form.reset();
       form.material.focus();
     } catch (err) {
-      console.error('Submit failed:', err);
-      alert('Could not submit right now. Please try again.');
-    } finally {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = oldLabel; }
+      console.error(err);
+      alert("Could not submit right now. Please try again.");
     }
   });
 })();
