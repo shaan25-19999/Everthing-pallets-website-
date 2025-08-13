@@ -271,31 +271,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const $ = (id) => document.getElementById(id);
   if (!$("#submitPrice")) return; // block not on page
 
-  // Try to hydrate states from your existing #locationSelect
-  (function hydrateStates() {
-    const dst = $("#sp_state");
-    if (!dst) return;
-    const src = document.getElementById("locationSelect");
-    if (src && src.options && src.options.length) {
-      dst.innerHTML = Array.from(src.options).map(o => `<option>${o.value || o.text}</option>`).join("");
-    } else {
-      // Fallback minimal list so UI isn't empty
-      dst.innerHTML = ["AVERAGE","NCR","Punjab","Haryana","Rajasthan"].map(s => `<option>${s}</option>`).join("");
-    }
-  })();
-
   const fmt = (n) => (isNaN(n) || n == null ? "--" : Number(n).toLocaleString("en-IN"));
+
   function renderFeed() {
     const feed = $("#sp_feed");
     if (!feed) return;
     const items = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
-    if (!items.length) { feed.innerHTML = `<div class="muted">No community submissions yet.</div>`; return; }
+    if (!items.length) {
+      feed.innerHTML = `<div class="muted">No community submissions yet.</div>`;
+      return;
+    }
     feed.innerHTML = items.slice(0, 10).map(x => {
       const dt = new Date(x.ts).toLocaleString("en-IN");
       return `
         <div class="feed-item">
           <div class="feed-top"><strong>${x.material}</strong> • ₹${fmt(x.price)}/ton</div>
-          <div class="feed-mid">${x.city ? x.city + ", " : ""}${x.state}${x.qty ? ` • Qty: ${x.qty}t` : ""}</div>
+          <div class="feed-mid">${x.city ? x.city : ""}${x.qty ? ` • Qty: ${x.qty}t` : ""}</div>
           ${x.notes ? `<div class="feed-notes">${x.notes}</div>` : ""}
           <div class="feed-time">${dt}</div>
         </div>
@@ -306,22 +297,26 @@ document.addEventListener('DOMContentLoaded', () => {
   $("#sp_submit").addEventListener("click", () => {
     const payload = {
       ts: Date.now(),
-      state: $("#sp_state").value || "",
-      material: $("#sp_material").value || "",
+      material: $("#sp_material").value.trim(),
       price: Number($("#sp_price").value || 0),
       qty: Number($("#sp_qty").value || 0),
-      city: $("#sp_city").value || "",
-      notes: $("#sp_notes").value || ""
+      city: $("#sp_city").value.trim(),
+      notes: $("#sp_notes").value.trim()
     };
-    if (!payload.state || !payload.material || !payload.price) {
-      alert("Please fill State, Material and Price.");
+
+    if (!payload.material || !payload.price) {
+      alert("Please fill Material and Price.");
       return;
     }
+
     const existing = JSON.parse(localStorage.getItem("peltra_submissions") || "[]");
     existing.unshift(payload);
     localStorage.setItem("peltra_submissions", JSON.stringify(existing.slice(0, 20)));
     renderFeed();
-    ["sp_price","sp_qty","sp_city","sp_notes"].forEach(id => { const el = $("#"+id); if (el) el.value = ""; });
+    ["sp_material", "sp_price", "sp_qty", "sp_city", "sp_notes"].forEach(id => {
+      const el = $("#" + id);
+      if (el) el.value = "";
+    });
   });
 
   renderFeed();
