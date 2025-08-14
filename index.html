@@ -114,8 +114,7 @@
 <!-- ========================= -->
 <!-- FREIGHT & LANDED COST CALCULATOR -->
 <!-- ========================= -->
-<!-- Freight & Landed Cost Calculator (Simplified) -->
-<section class="section calc-card" id="freightCalc">
+<section class="section card calc-card" id="freightCalc">
   <h3>Freight Calculator</h3>
 
   <div class="calc-grid">
@@ -144,20 +143,21 @@
     </label>
   </div>
 
-  <div class="calc-actions">
-    <button id="fc-calc" type="button">Calculate</button>
-    <button id="fc-reset" type="button" class="secondary">Reset</button>
+  <!-- use the same button styles as Submit Price -->
+  <div class="actions calc-actions">
+    <button id="fc-calc" type="button" class="btn primary">Calculate</button>
+    <button id="fc-reset" type="button" class="btn primary">Reset</button>
+    <!-- If you prefer Reset outlined: class="btn ghost" -->
   </div>
 
   <div id="fc-results" class="calc-results" hidden>
     <p><strong>Total Freight:</strong> <span id="fc-total">₹0</span></p>
     <p><strong>Freight per ton:</strong> <span id="fc-perton">₹0/ton</span></p>
   </div>
-</section>>Reset</button>
-  </div>
-  <div id="fc_result" class="result"></div>
+
   <p class="note">* Estimates only. Actuals depend on lane, loading, wait time & diesel price.</p>
 </section>
+
 
 <!-- ========================= -->
 <!-- SUBMIT YOUR OWN PRICE (Netlify Forms, no JS required) -->
