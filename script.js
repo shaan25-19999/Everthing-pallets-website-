@@ -13,12 +13,12 @@ const loadData = async () => {
     const location = row.State?.trim();
     const material = row.Material?.trim();
     const type = row.Type?.trim();
-    const price = parseInt((row.Week ?? "0").toString().replace(/,/g, ''));
+    const price = parseInt((row.Week ?? "0").toString().replace(/,/g, '')) || 0;
     const trend = [
-      parseInt(row.Year || 0),
-      parseInt(row["6 Month"] || row["6 Months"] || 0),
-      parseInt(row.Month || 0),
-      parseInt(row.Week || 0)
+      parseInt(row.Year ?? "0"),
+      parseInt(row["6 Month"] ?? "0"),
+      parseInt(row.Month ?? "0"),
+      parseInt(row.Week ?? "0")
     ];
 
     if (!location || !material || !type) continue;
@@ -29,7 +29,7 @@ const loadData = async () => {
 
     const formatted = { price, trend };
 
-    if (type.toLowerCase() === "pellet") {
+    if ((type || "").toLowerCase() === "pellet") {
       structured[location].materials.pellets[material] = formatted;
       pelletLabels.add(material);
     } else {
@@ -47,228 +47,170 @@ document.addEventListener("DOMContentLoaded", async () => {
   const briquetteSelect  = document.getElementById("briquetteSelect");
   const materialTable    = document.getElementById("materialTable");
   const briquetteTable   = document.getElementById("briquetteTable");
-  const pelletToggleWrap = document.getElementById("pelletToggleWrap") || materialTable.parentElement;
-  const briqToggleWrap   = document.getElementById("briquetteToggleWrap") || briquetteTable.parentElement;
-
-  const ctx          = document.getElementById("priceChart").getContext("2d");
-  const briquetteCtx = document.getElementById("briquetteChart").getContext("2d");
+  const ctx              = document.getElementById("priceChart")?.getContext("2d");
+  const briquetteCtx     = document.getElementById("briquetteChart")?.getContext("2d");
 
   const { structured: dataset, pelletLabels, briquetteLabels } = await loadData();
+
+  // Remove GLOBAL buckets from dropdowns
   pelletLabels.delete("GLOBAL");
   briquetteLabels.delete("GLOBAL");
 
-  const locations = Object.keys(dataset).filter(loc => loc.toUpperCase() !== "GLOBAL");
+  // Build Location list (skip GLOBAL if present)
+  const locations = Object.keys(dataset).filter(loc => (loc || "").toUpperCase() !== "GLOBAL");
 
-  // Populate dropdowns
   locations.forEach(loc => {
     const opt = document.createElement("option");
-    opt.value = opt.textContent = loc;
+    opt.value = loc;
+    opt.textContent = loc;
     locationSelect.appendChild(opt);
   });
+
+  // Preload “all materials” options (first load; they’ll be replaced when location changes)
   pelletLabels.forEach(mat => {
     const opt = document.createElement("option");
-    opt.value = opt.textContent = mat;
+    opt.value = mat;
+    opt.textContent = mat;
     materialSelect.appendChild(opt);
   });
   briquetteLabels.forEach(mat => {
     const opt = document.createElement("option");
-    opt.value = opt.textContent = mat;
+    opt.value = mat;
+    opt.textContent = mat;
     briquetteSelect.appendChild(opt);
   });
 
-  // Charts
+  // ===== Charts =====
   const baseChartOpts = {
     type: 'line',
-    data: { labels: ['Year', '6 Months', 'Month', 'Week'], datasets: [{ label: '', data: [], borderColor:'#168aad', backgroundColor:'#e8f6f7', tension:0.25, pointRadius:3 }] },
+    data: { labels: ['Year', '6 Months', 'Month', 'Week'], datasets: [{ label: '', data: [], tension: 0.3, borderWidth: 2, pointRadius: 3 }] },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: c => `₹${c.parsed.y.toLocaleString('en-IN')}` } }
-      },
-      scales: {
-        y: {
-          ticks: { callback: v => `₹${Number(v).toLocaleString('en-IN')}` }
-        }
-      }
+      plugins: { tooltip: { callbacks: { label: c => `₹${(c.parsed.y ?? 0).toLocaleString('en-IN')}` } } },
+      scales: { y: { ticks: { callback: v => `₹${Number(v).toLocaleString('en-IN')}` } } }
     }
   };
-  const chart         = new Chart(ctx,          JSON.parse(JSON.stringify(baseChartOpts)));
-  const briquetteChart= new Chart(briquetteCtx, JSON.parse(JSON.stringify(baseChartOpts)));
 
-  // ------- Collapsible table helpers -------
-  const ROW_LIMIT = 2;
+  const chart = ctx ? new Chart(ctx, baseChartOpts) : null;
+  const briquetteChart = briquetteCtx ? new Chart(briquetteCtx, baseChartOpts) : null;
 
-  function rowsHTML(entries, barColor) {
-    return entries.map(([type, { price, trend }], i) => {
-      const hiddenClass = i >= ROW_LIMIT ? "is-hidden" : "";
-      const trendHTML = trend.map(val =>
-        `<span class="spark-bar" style="height:${10 + (Number(val)||0)/100}px; background:${barColor}"></span>`
-      ).join("");
-      return `
-        <tr class="${hiddenClass}">
+  // ===== Tables (with mini trend bars) =====
+  function trendBars(arr, color = '#52b788') {
+    // Normalize heights a bit so small values still show a bar
+    const nums = arr.map(n => Number(n) || 0);
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
+    return nums.map(v => {
+      const h = max > min ? 18 + ((v - min) / (max - min)) * 26 : 28; // 18–44px
+      return `<span style="display:inline-block;width:6px;height:${h}px;background:${color};border-radius:2px;margin:0 2px;"></span>`;
+    }).join('');
+  }
+
+  function renderTable(locationKey) {
+    const data = dataset[locationKey]?.materials?.pellets || {};
+    materialTable.innerHTML =
+      `<tr><th>Pellet Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
+      Object.entries(data).map(([type, { price, trend }]) => `
+        <tr>
           <td>${type}</td>
-          <td><strong>₹${(Number(price)||0).toLocaleString('en-IN')}</strong></td>
-          <td class="trend-cell">${trendHTML}</td>
-        </tr>`;
-    }).join("");
+          <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
+          <td>${trendBars(trend, '#2FA66A')}</td>
+        </tr>
+      `).join('');
   }
 
-  function renderTable(locationKey, expandedPellets=false) {
-    const data = dataset[locationKey].materials.pellets;
-    const entries = Object.entries(data);
-    const hasMore = entries.length > ROW_LIMIT;
-
-    materialTable.innerHTML = `
-      <tr><th>Pellet Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>
-      ${rowsHTML(entries, '#52b788')}
-    `;
-
-    // Toggle button
-    const existing = pelletToggleWrap.querySelector('[data-toggle="pellet"]');
-    if (existing) existing.remove();
-    if (hasMore) {
-      const btn = document.createElement('button');
-      btn.className = 'btn show-toggle';
-      btn.dataset.toggle = 'pellet';
-      btn.textContent = expandedPellets ? 'Show less' : `Show all (${entries.length})`;
-      pelletToggleWrap.appendChild(btn);
-      setExpanded(materialTable, expandedPellets);
-    }
+  function renderBriquetteTable(locationKey) {
+    const data = dataset[locationKey]?.materials?.briquettes || {};
+    briquetteTable.innerHTML =
+      `<tr><th>Briquette Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
+      Object.entries(data).map(([type, { price, trend }]) => `
+        <tr>
+          <td>${type}</td>
+          <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
+          <td>${trendBars(trend, '#3B7A57')}</td>
+        </tr>
+      `).join('');
   }
 
-  function renderBriquetteTable(locationKey, expandedBriq=false) {
-    const data = dataset[locationKey].materials.briquettes;
-    const entries = Object.entries(data);
-    const hasMore = entries.length > ROW_LIMIT;
-
-    briquetteTable.innerHTML = `
-      <tr><th>Briquette Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>
-      ${rowsHTML(entries, '#6a4f2d')}
-    `;
-
-    const existing = briqToggleWrap.querySelector('[data-toggle="briq"]');
-    if (existing) existing.remove();
-    if (hasMore) {
-      const btn = document.createElement('button');
-      btn.className = 'btn show-toggle';
-      btn.dataset.toggle = 'briq';
-      btn.textContent = expandedBriq ? 'Show less' : `Show all (${entries.length})`;
-      briqToggleWrap.appendChild(btn);
-      setExpanded(briquetteTable, expandedBriq);
-    }
-  }
-
-  function setExpanded(tableEl, expand) {
-    tableEl.querySelectorAll('tr.is-hidden').forEach(tr => {
-      tr.style.display = expand ? 'table-row' : 'none';
-    });
-  }
-
-  // ------- Chart + specs -------
   function updateChart(locationKey, type, chartObj, isPellet = true) {
-    const source = isPellet ? dataset[locationKey].materials.pellets
-                            : dataset[locationKey].materials.briquettes;
-    const trend  = source[type]?.trend || [];
-    chartObj.data.datasets[0].label = type;
-    chartObj.data.datasets[0].data  = trend;
+    if (!chartObj) return;
+    const source = isPellet ? dataset[locationKey]?.materials?.pellets : dataset[locationKey]?.materials?.briquettes;
+    const trend = source?.[type]?.trend || [];
+    chartObj.data.datasets[0].label = type || '';
+    chartObj.data.datasets[0].data = trend;
     chartObj.update();
-
     updateSpecs(type, isPellet);
   }
 
+  // ===== Specs + timestamp (from GLOBAL rows) =====
   function updateSpecs(material, isPellet = true) {
     const specContainerId = isPellet ? "pelletSpecs" : "briquetteSpecs";
     const timestampId     = isPellet ? "pelletTimestamp" : "briquetteTimestamp";
 
     const globalInfo = sheetData.find(row =>
-      row.State?.trim().toLowerCase() === "global" &&
-      row.Material?.trim() === material &&
-      row.Type?.trim().toLowerCase().includes(isPellet ? "pellet" : "briquette")
+      (row.State ?? '').trim().toLowerCase() === "global" &&
+      (row.Material ?? '').trim() === material &&
+      (row.Type ?? '').trim().toLowerCase().includes(isPellet ? "pellet" : "briquette")
     );
 
-    if (globalInfo) {
-      document.getElementById(specContainerId).innerHTML = `
-        <p><strong>Ash:</strong> ${globalInfo.Ash || '--'}%</p>
-        <p><strong>Moisture:</strong> ${globalInfo.Moisture || '--'}%</p>
-        <p><strong>Kcal Value:</strong> ${globalInfo.Kcal || '--'}</p>
+    const container = document.getElementById(specContainerId);
+    if (container && globalInfo) {
+      container.innerHTML = `
+        <p><strong>Ash:</strong> ${globalInfo.Ash ?? '--'}%</p>
+        <p><strong>Moisture:</strong> ${globalInfo.Moisture ?? '--'}%</p>
+        <p><strong>Kcal Value:</strong> ${globalInfo.Kcal ?? '--'}</p>
       `;
     }
 
     const lastRow = sheetData.find(row => row["Last Updated"]);
-    if (lastRow) document.getElementById(timestampId).textContent = lastRow["Last Updated"];
+    const tsEl = document.getElementById(timestampId);
+    if (lastRow && tsEl) tsEl.textContent = lastRow["Last Updated"];
   }
 
+  // ===== Keep dropdowns in sync with selected location =====
   function updateMaterialDropdowns(locationKey) {
     materialSelect.innerHTML = "";
     briquetteSelect.innerHTML = "";
 
-    Object.keys(dataset[locationKey].materials.pellets).forEach(mat => {
+    const pelletMaterials = Object.keys(dataset[locationKey]?.materials?.pellets || {});
+    pelletMaterials.forEach(mat => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = mat;
       materialSelect.appendChild(opt);
     });
-    Object.keys(dataset[locationKey].materials.briquettes).forEach(mat => {
+
+    const briquetteMaterials = Object.keys(dataset[locationKey]?.materials?.briquettes || {});
+    briquetteMaterials.forEach(mat => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = mat;
       briquetteSelect.appendChild(opt);
     });
   }
 
-  // Keep toggle state per section when location changes
-  let pelletsExpanded   = false;
-  let briquettesExpanded= false;
-
+  // ===== One-shot refresh =====
   function refreshAll() {
     const loc = locationSelect.value;
-
     updateMaterialDropdowns(loc);
-    renderTable(loc, pelletsExpanded);
-    renderBriquetteTable(loc, briquettesExpanded);
+    renderTable(loc);
+    renderBriquetteTable(loc);
 
-    const defaultPellet    = materialSelect.options[0]?.value;
-    const defaultBriquette = briquetteSelect.options[0]?.value;
+    const defaultPellet     = materialSelect.options[0]?.value;
+    const defaultBriquette  = briquetteSelect.options[0]?.value;
 
     if (defaultPellet)    updateChart(loc, defaultPellet, chart, true);
     if (defaultBriquette) updateChart(loc, defaultBriquette, briquetteChart, false);
   }
 
-  // Wire selectors
-  locationSelect.addEventListener("change", () => {
-    pelletsExpanded = false;
-    briquettesExpanded = false;
-    refreshAll();
-  });
-  materialSelect.addEventListener("change", () =>
-    updateChart(locationSelect.value, materialSelect.value, chart, true)
-  );
-  briquetteSelect.addEventListener("change", () =>
-    updateChart(locationSelect.value, briquetteSelect.value, briquetteChart, false)
-  );
-
-  // Toggle handlers (event delegation)
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-toggle]');
-    if (!btn) return;
-
-    const kind = btn.dataset.toggle; // 'pellet' | 'briq'
-    if (kind === 'pellet') {
-      pelletsExpanded = !pelletsExpanded;
-      setExpanded(materialTable, pelletsExpanded);
-      btn.textContent = pelletsExpanded ? 'Show less' : `Show all (${materialTable.querySelectorAll('tr').length - 1})`;
-    } else {
-      briquettesExpanded = !briquettesExpanded;
-      setExpanded(briquetteTable, briquettesExpanded);
-      btn.textContent = briquettesExpanded ? 'Show less' : `Show all (${briquetteTable.querySelectorAll('tr').length - 1})`;
-    }
-  });
-
-  // Defaults
-  locationSelect.value  = locations[0];
-  materialSelect.value  = [...pelletLabels][0] || "";
-  briquetteSelect.value = [...briquetteLabels][0] || "";
+  // Init selections + render
+  locationSelect.value = locations[0];
   refreshAll();
+
+  // Events
+  locationSelect.addEventListener("change", refreshAll);
+  materialSelect.addEventListener("change", () => updateChart(locationSelect.value, materialSelect.value, chart, true));
+  briquetteSelect.addEventListener("change", () => updateChart(locationSelect.value, briquetteSelect.value, briquetteChart, false));
 });
+
 
 // ==============================
 // FREIGHT CALCULATOR (standalone)
@@ -276,26 +218,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 function formatINR(n) { return `₹${Number(n).toLocaleString('en-IN')}`; }
 
 function calcFreight() {
-  const d    = Number(document.getElementById('fc-distance').value || 0);
-  const qty  = Number(document.getElementById('fc-qty').value || 0);
-  const base = Number(document.getElementById('fc-base').value || 0);
-  if (d <= 0 || qty <= 0 || base < 0) { alert('Please enter valid Distance, Quantity, and Freight Base.'); return; }
+  const d   = Number(document.getElementById('fc-distance')?.value || 0);
+  const qty = Number(document.getElementById('fc-qty')?.value || 0);
+  const base= Number(document.getElementById('fc-base')?.value || 0);
+
+  if (d <= 0 || qty <= 0 || base < 0) {
+    alert('Please enter valid Distance, Quantity, and Freight Base.');
+    return;
+  }
   const totalFreight = d * base;
   const perTon = totalFreight / qty;
+
   document.getElementById('fc-total').textContent  = formatINR(totalFreight);
   document.getElementById('fc-perton').textContent = `${formatINR(perTon)}/ton`;
   document.getElementById('fc-results').hidden = false;
 }
+
 function resetFreight() {
-  ['fc-distance','fc-qty','fc-base'].forEach(id => document.getElementById(id).value = '');
-  const t = document.getElementById('fc-truck'); if (t) t.selectedIndex = 0;
-  document.getElementById('fc-results').hidden = true;
+  ['fc-distance','fc-qty','fc-base'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const sel = document.getElementById('fc-truck');
+  if (sel) sel.selectedIndex = 0;
+  const r = document.getElementById('fc-results');
+  if (r) r.hidden = true;
 }
+
 document.addEventListener('DOMContentLoaded', () => {
-  const c = document.getElementById('fc-calc');
-  const r = document.getElementById('fc-reset');
-  if (c && r) { c.addEventListener('click', calcFreight); r.addEventListener('click', resetFreight); }
+  const calcBtn  = document.getElementById('fc-calc');
+  const resetBtn = document.getElementById('fc-reset');
+  if (calcBtn && resetBtn) {
+    calcBtn.addEventListener('click', calcFreight);
+    resetBtn.addEventListener('click', resetFreight);
+  }
 });
+
 
 // =======================================
 // SUBMIT YOUR OWN PRICE (Netlify Forms)
@@ -322,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const payload = {
       "form-name": form.getAttribute("name"),
       material: form.material.value.trim(),
@@ -330,7 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
       city: form.city.value.trim(),
       notes: form.notes.value.trim(),
     };
-    if (!payload.material || !payload.price) { alert("Please enter Material and Price."); return; }
+
+    if (!payload.material || !payload.price) {
+      alert("Please enter Material and Price.");
+      return;
+    }
 
     try {
       await fetch("/", {
@@ -338,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: toURLEncoded(payload)
       });
+
       addToFeed(payload);
       form.reset();
       form.material.focus();
