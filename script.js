@@ -1,32 +1,24 @@
 // ✅ Fetch live JSON from Google Sheets (via Sheet.best)
 let sheetData = [];
 
-async function loadData() {
-  try {
-    const res = await fetch(
-      "https://api.sheetbest.com/sheets/ec0fea37-5ac0-45b5-a7c9-cda68fcb04bf",
-      { cache: "no-store" } // <-- avoid stale cache
-    );
-    sheetData = await res.json();
-  } catch (e) {
-    console.error("Sheet fetch failed:", e);
-    sheetData = [];
-  }
+const loadData = async () => {
+  const res = await fetch("https://api.sheetbest.com/sheets/ec0fea37-5ac0-45b5-a7c9-cda68fcb04bf");
+  sheetData = await res.json();
 
   const structured = {};
   const pelletLabels = new Set();
   const briquetteLabels = new Set();
 
   for (const row of sheetData) {
-    const location = (row.State ?? "").trim();
-    const material = (row.Material ?? "").trim();
-    const type     = (row.Type ?? "").trim();
-    const price    = parseInt((row.Week ?? "0").toString().replace(/,/g, "")) || 0;
-    const trend    = [
+    const location = row.State?.trim();
+    const material = row.Material?.trim();
+    const type = row.Type?.trim();
+    const price = parseInt((row.Week ?? "0").toString().replace(/,/g, '')) || 0;
+    const trend = [
       parseInt(row.Year ?? "0"),
       parseInt(row["6 Month"] ?? "0"),
       parseInt(row.Month ?? "0"),
-      parseInt(row.Week ?? "0"),
+      parseInt(row.Week ?? "0")
     ];
 
     if (!location || !material || !type) continue;
@@ -37,7 +29,7 @@ async function loadData() {
 
     const formatted = { price, trend };
 
-    if (type.toLowerCase() === "pellet") {
+    if ((type || "").toLowerCase() === "pellet") {
       structured[location].materials.pellets[material] = formatted;
       pelletLabels.add(material);
     } else {
@@ -47,68 +39,80 @@ async function loadData() {
   }
 
   return { structured, pelletLabels, briquetteLabels };
-}
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const locationSelect  = document.getElementById("locationSelect");
-  const materialSelect  = document.getElementById("materialSelect");
-  const briquetteSelect = document.getElementById("briquetteSelect");
-  const materialTable   = document.getElementById("materialTable");
-  const briquetteTable  = document.getElementById("briquetteTable");
-  const ctx             = document.getElementById("priceChart")?.getContext("2d");
-  const briquetteCtx    = document.getElementById("briquetteChart")?.getContext("2d");
+  const locationSelect   = document.getElementById("locationSelect");
+  const materialSelect   = document.getElementById("materialSelect");
+  const briquetteSelect  = document.getElementById("briquetteSelect");
+  const materialTable    = document.getElementById("materialTable");
+  const briquetteTable   = document.getElementById("briquetteTable");
+  const ctx              = document.getElementById("priceChart")?.getContext("2d");
+  const briquetteCtx     = document.getElementById("briquetteChart")?.getContext("2d");
 
-  const { structured: dataset } = await loadData();
+  // 🔹 NEW: price elements on the cards
+  const pelletPriceEl    = document.getElementById("pelletPriceValue");
+  const briqPriceEl      = document.getElementById("briquettePriceValue");
 
-  // Build list of usable locations (skip GLOBAL)
-  const allLocations = Object.keys(dataset).filter(
-    l => (l || "").toUpperCase() !== "GLOBAL"
-  );
-
-  // Helper: does a location have any data?
-  const hasAnyData = (loc) => {
-    const m = dataset[loc]?.materials;
-    return m && (Object.keys(m.pellets || {}).length || Object.keys(m.briquettes || {}).length);
+  // helper to write INR or fallback
+  const setPriceText = (el, n) => {
+    if (!el) return;
+    el.textContent = (n && !isNaN(n)) ? `₹${Number(n).toLocaleString('en-IN')}` : "₹--";
   };
 
-  // Pick the first location that actually has rows
-  const initialLocation = allLocations.find(hasAnyData) || allLocations[0] || "";
+  const { structured: dataset, pelletLabels, briquetteLabels } = await loadData();
 
-  // Populate the location select
-  locationSelect.innerHTML = "";
-  allLocations.forEach(loc => {
+  // Remove GLOBAL buckets from dropdowns
+  pelletLabels.delete("GLOBAL");
+  briquetteLabels.delete("GLOBAL");
+
+  // Build Location list (skip GLOBAL if present)
+  const locations = Object.keys(dataset).filter(loc => (loc || "").toUpperCase() !== "GLOBAL");
+
+  locations.forEach(loc => {
     const opt = document.createElement("option");
-    opt.value = opt.textContent = loc;
+    opt.value = loc;
+    opt.textContent = loc;
     locationSelect.appendChild(opt);
   });
-  if (initialLocation) locationSelect.value = initialLocation;
+
+  // Preload “all materials” options (first load; they’ll be replaced when location changes)
+  pelletLabels.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    materialSelect.appendChild(opt);
+  });
+  briquetteLabels.forEach(mat => {
+    const opt = document.createElement("option");
+    opt.value = mat;
+    opt.textContent = mat;
+    briquetteSelect.appendChild(opt);
+  });
 
   // ===== Charts =====
   const baseChartOpts = {
-    type: "line",
-    data: {
-      labels: ["Year", "6 Months", "Month", "Week"],
-      datasets: [{ label: "", data: [], tension: 0.3, borderWidth: 2, pointRadius: 3 }],
-    },
+    type: 'line',
+    data: { labels: ['Year', '6 Months', 'Month', 'Week'], datasets: [{ label: '', data: [], tension: 0.3, borderWidth: 2, pointRadius: 3 }] },
     options: {
       responsive: true,
-      plugins: {
-        tooltip: { callbacks: { label: c => `₹${(c.parsed.y ?? 0).toLocaleString("en-IN")}` } },
-      },
-      scales: { y: { ticks: { callback: v => `₹${Number(v).toLocaleString("en-IN")}` } } },
-    },
+      plugins: { tooltip: { callbacks: { label: c => `₹${(c.parsed.y ?? 0).toLocaleString('en-IN')}` } } },
+      scales: { y: { ticks: { callback: v => `₹${Number(v).toLocaleString('en-IN')}` } } }
+    }
   };
+
   const chart = ctx ? new Chart(ctx, baseChartOpts) : null;
   const briquetteChart = briquetteCtx ? new Chart(briquetteCtx, baseChartOpts) : null;
 
   // ===== Mini-trend bars =====
-  function trendBars(arr, color = "#52b788") {
+  function trendBars(arr, color = '#52b788') {
     const nums = arr.map(n => Number(n) || 0);
-    const min = Math.min(...nums), max = Math.max(...nums);
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
     return nums.map(v => {
       const h = max > min ? 18 + ((v - min) / (max - min)) * 26 : 28; // 18–44px
       return `<span style="display:inline-block;width:6px;height:${h}px;background:${color};border-radius:2px;margin:0 2px;"></span>`;
-    }).join("");
+    }).join('');
   }
 
   // ===== Show All/Show Less state =====
@@ -120,21 +124,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     return entries.slice(0, limit).map(([type, { price, trend }]) => `
       <tr>
         <td>${type}</td>
-        <td><strong>₹${Number(price).toLocaleString("en-IN")}</strong></td>
+        <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
         <td>${trendBars(trend, color)}</td>
       </tr>
-    `).join("");
+    `).join('');
   }
 
-  function addOrUpdateToggleBtn(parentEl, total, showingAll, onToggle) {
-    const old = parentEl.querySelector(".show-toggle");
+  function addOrUpdateToggleBtn(parentEl, isPellet, total, showingAll, onToggle) {
+    const old = parentEl.querySelector('.show-toggle');
     if (old) old.remove();
     if (total <= ROW_LIMIT) return;
-    const btn = document.createElement("button");
-    btn.className = "btn ghost show-toggle";
-    btn.style.margin = "10px 0 0";
-    btn.textContent = showingAll ? "Show Less" : `Show All (${total})`;
-    btn.addEventListener("click", onToggle);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn ghost show-toggle';
+    btn.style.margin = '10px 0 0';
+    btn.textContent = showingAll ? 'Show Less' : `Show All (${total})`;
+    btn.addEventListener('click', onToggle);
     parentEl.appendChild(btn);
   }
 
@@ -146,10 +151,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     materialTable.innerHTML =
       `<tr><th>Pellet Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
-      buildRows(entries, limit, "#2FA66A");
+      buildRows(entries, limit, '#2FA66A');
 
     addOrUpdateToggleBtn(
       materialTable.parentElement,
+      true,
       entries.length,
       showAllPellets,
       () => { showAllPellets = !showAllPellets; renderTable(locationKey); }
@@ -163,25 +169,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     briquetteTable.innerHTML =
       `<tr><th>Briquette Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
-      buildRows(entries, limit, "#3B7A57");
+      buildRows(entries, limit, '#3B7A57');
 
     addOrUpdateToggleBtn(
       briquetteTable.parentElement,
+      false,
       entries.length,
       showAllBriquettes,
       () => { showAllBriquettes = !showAllBriquettes; renderBriquetteTable(locationKey); }
     );
   }
 
+  // 🔹 update both chart/specs AND the big price on the card
   function updateChart(locationKey, type, chartObj, isPellet = true) {
     if (!chartObj) return;
-    const source = isPellet
-      ? dataset[locationKey]?.materials?.pellets
-      : dataset[locationKey]?.materials?.briquettes;
-    const trend = source?.[type]?.trend || [];
-    chartObj.data.datasets[0].label = type || "";
+
+    const source = isPellet ? dataset[locationKey]?.materials?.pellets
+                            : dataset[locationKey]?.materials?.briquettes;
+    const node   = source?.[type];
+
+    const trend = node?.trend || [];
+    const price = node?.price ?? null;
+
+    chartObj.data.datasets[0].label = type || '';
     chartObj.data.datasets[0].data = trend;
     chartObj.update();
+
+    // write card price
+    if (isPellet) setPriceText(pelletPriceEl, price);
+    else          setPriceText(briqPriceEl, price);
+
     updateSpecs(type, isPellet);
   }
 
@@ -191,17 +208,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timestampId     = isPellet ? "pelletTimestamp" : "briquetteTimestamp";
 
     const globalInfo = sheetData.find(row =>
-      (row.State ?? "").trim().toLowerCase() === "global" &&
-      (row.Material ?? "").trim() === material &&
-      (row.Type ?? "").trim().toLowerCase().includes(isPellet ? "pellet" : "briquette")
+      (row.State ?? '').trim().toLowerCase() === "global" &&
+      (row.Material ?? '').trim() === material &&
+      (row.Type ?? '').trim().toLowerCase().includes(isPellet ? "pellet" : "briquette")
     );
 
     const container = document.getElementById(specContainerId);
     if (container && globalInfo) {
       container.innerHTML = `
-        <p><strong>Ash:</strong> ${globalInfo.Ash ?? "--"}%</p>
-        <p><strong>Moisture:</strong> ${globalInfo.Moisture ?? "--"}%</p>
-        <p><strong>Kcal Value:</strong> ${globalInfo.Kcal ?? "--"}</p>
+        <p><strong>Ash:</strong> ${globalInfo.Ash ?? '--'}%</p>
+        <p><strong>Moisture:</strong> ${globalInfo.Moisture ?? '--'}%</p>
+        <p><strong>Kcal Value:</strong> ${globalInfo.Kcal ?? '--'}</p>
       `;
     }
 
@@ -215,15 +232,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     materialSelect.innerHTML = "";
     briquetteSelect.innerHTML = "";
 
-    const pellets = Object.keys(dataset[locationKey]?.materials?.pellets || {});
-    const briqs   = Object.keys(dataset[locationKey]?.materials?.briquettes || {});
-
-    pellets.forEach(mat => {
+    const pelletMaterials = Object.keys(dataset[locationKey]?.materials?.pellets || {});
+    pelletMaterials.forEach(mat => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = mat;
       materialSelect.appendChild(opt);
     });
-    briqs.forEach(mat => {
+
+    const briquetteMaterials = Object.keys(dataset[locationKey]?.materials?.briquettes || {});
+    briquetteMaterials.forEach(mat => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = mat;
       briquetteSelect.appendChild(opt);
@@ -234,7 +251,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   function refreshAll() {
     const loc = locationSelect.value;
 
-    // reset toggles on location change
     showAllPellets = false;
     showAllBriquettes = false;
 
@@ -242,79 +258,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderTable(loc);
     renderBriquetteTable(loc);
 
-    const defaultPellet    = materialSelect.options[0]?.value;
-    const defaultBriquette = briquetteSelect.options[0]?.value;
+    const defaultPellet     = materialSelect.options[0]?.value;
+    const defaultBriquette  = briquetteSelect.options[0]?.value;
 
     if (defaultPellet)    updateChart(loc, defaultPellet, chart, true);
     if (defaultBriquette) updateChart(loc, defaultBriquette, briquetteChart, false);
-
-    // If a location truly has no rows, let the user know (but don’t crash)
-    const hasPel = materialSelect.options.length > 0;
-    const hasBrq = briquetteSelect.options.length > 0;
-    const pelletPriceEl = document.querySelector("#pelletCard .big-price");
-    const briqPriceEl   = document.querySelector("#briquetteCard .big-price");
-    if (pelletPriceEl && !hasPel) pelletPriceEl.textContent = "—";
-    if (briqPriceEl && !hasBrq)   briqPriceEl.textContent   = "—";
   }
 
   // Init selections + render
-  if (initialLocation) {
-    locationSelect.value = initialLocation;
-    refreshAll();
-  } else {
-    console.warn("No locations available from sheet.");
-  }
+  locationSelect.value = locations[0];
+  refreshAll();
 
   // Events
   locationSelect.addEventListener("change", refreshAll);
-  materialSelect.addEventListener("change", () =>
-    updateChart(locationSelect.value, materialSelect.value, chart, true)
-  );
-  briquetteSelect.addEventListener("change", () =>
-    updateChart(locationSelect.value, briquetteSelect.value, briquetteChart, false)
-  );
+  materialSelect.addEventListener("change", () => updateChart(locationSelect.value, materialSelect.value, chart, true));
+  briquetteSelect.addEventListener("change", () => updateChart(locationSelect.value, briquetteSelect.value, briquetteChart, false));
 });
 
 
 // ==============================
 // FREIGHT CALCULATOR (standalone)
 // ==============================
-const formatINR = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
+function formatINR(n) { return `₹${Number(n).toLocaleString('en-IN')}`; }
 
 function calcFreight() {
-  const d   = Number(document.getElementById("fc-distance")?.value || 0);
-  const qty = Number(document.getElementById("fc-qty")?.value || 0);
-  const base= Number(document.getElementById("fc-base")?.value || 0);
+  const d   = Number(document.getElementById('fc-distance')?.value || 0);
+  const qty = Number(document.getElementById('fc-qty')?.value || 0);
+  const base= Number(document.getElementById('fc-base')?.value || 0);
 
   if (d <= 0 || qty <= 0 || base < 0) {
-    alert("Please enter valid Distance, Quantity, and Freight Base.");
+    alert('Please enter valid Distance, Quantity, and Freight Base.');
     return;
   }
   const totalFreight = d * base;
   const perTon = totalFreight / qty;
 
-  document.getElementById("fc-total").textContent  = formatINR(totalFreight);
-  document.getElementById("fc-perton").textContent = `${formatINR(perTon)}/ton`;
-  document.getElementById("fc-results").hidden = false;
+  document.getElementById('fc-total').textContent  = formatINR(totalFreight);
+  document.getElementById('fc-perton').textContent = `${formatINR(perTon)}/ton`;
+  document.getElementById('fc-results').hidden = false;
 }
 
 function resetFreight() {
-  ["fc-distance","fc-qty","fc-base"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  const sel = document.getElementById("fc-truck");
+  ['fc-distance','fc-qty','fc-base'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const sel = document.getElementById('fc-truck');
   if (sel) sel.selectedIndex = 0;
-  const r = document.getElementById("fc-results");
+  const r = document.getElementById('fc-results');
   if (r) r.hidden = true;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const calcBtn  = document.getElementById("fc-calc");
-  const resetBtn = document.getElementById("fc-reset");
+document.addEventListener('DOMContentLoaded', () => {
+  const calcBtn  = document.getElementById('fc-calc');
+  const resetBtn = document.getElementById('fc-reset');
   if (calcBtn && resetBtn) {
-    calcBtn.addEventListener("click", calcFreight);
-    resetBtn.addEventListener("click", resetFreight);
+    calcBtn.addEventListener('click', calcFreight);
+    resetBtn.addEventListener('click', resetFreight);
   }
 });
 
@@ -324,25 +321,25 @@ document.addEventListener("DOMContentLoaded", () => {
 // =======================================
 (() => {
   const form = document.querySelector('form[name="price-submissions"]');
-  const feed = document.getElementById("submitFeed");
+  const feed = document.getElementById('submitFeed');
   if (!form || !feed) return;
 
   const toURLEncoded = (data) =>
     Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
 
   function addToFeed(item){
-    const card = document.createElement("div");
-    card.className = "feed-item";
+    const card = document.createElement('div');
+    card.className = 'feed-item';
     card.innerHTML = `
-      <div class="feed-top">${item.material} • ₹${Number(item.price).toLocaleString("en-IN")}/ton</div>
+      <div class="feed-top">${item.material} • ₹${Number(item.price).toLocaleString('en-IN')}/ton</div>
       <div class="feed-mid">${item.city} • ${item.quantity} tons</div>
-      ${item.notes ? `<div class="feed-notes">${item.notes}</div>` : ""}
-      <div class="feed-time">${new Date().toLocaleString("en-IN")}</div>
+      ${item.notes ? `<div class="feed-notes">${item.notes}</div>` : ''}
+      <div class="feed-time">${new Date().toLocaleString('en-IN')}</div>
     `;
     feed.prepend(card);
   }
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -363,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: toURLEncoded(payload),
+        body: toURLEncoded(payload)
       });
 
       addToFeed(payload);
