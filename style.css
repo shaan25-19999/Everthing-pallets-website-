@@ -73,6 +73,13 @@ th{ background:var(--thead); font-weight:700; color:#204561 }
 tr:last-child td{ border-bottom:0 }
 .hover-table tr:hover td{ background:#f6fbfd }
 
+/* helper for the tiny 4‑bar trend */
+.trend-bars{ white-space:nowrap }
+.trend-bars span{
+  display:inline-block; width:5px; margin:0 1px; background:#52b788; border-radius:2px
+}
+.trend-bars.briq span{ background:#6a4f2d }
+
 /* ============ FORMS (inputs & selects) ============ */
 label{ display:block; font-weight:700; color:#204561; margin:8px 0 6px }
 input[type="text"], input[type="number"], select{
@@ -121,6 +128,20 @@ select:focus, input:focus{
 .btn.ghost{ background:transparent; color:var(--brand); border-color:var(--brand) }
 .btn:hover{ transform:translateY(-1px) }
 .btn:active{ transform:translateY(0) }
+
+/* Text‑style button used for “Show all / Show fewer” */
+.btn.link{
+  height:auto; padding:0; border:0; background:transparent;
+  color:var(--brand-2); font-weight:800; text-decoration:underline; cursor:pointer;
+}
+.btn.link:hover{ color:var(--brand) }
+
+/* ============ COLLAPSIBLE LIST HOOKS ============ */
+.hidden-row{ display:none }          /* JS toggles this on extra rows */
+.table-actions{
+  display:flex; justify-content:center; padding:10px 12px; background:#fff;
+  border:1px solid #eef4f7; border-top:0; border-radius:0 0 14px 14px;
+}
 
 /* ============ RESULT STRIP (freight) ============ */
 .result{ margin-top:12px }
