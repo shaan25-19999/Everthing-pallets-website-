@@ -94,9 +94,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chart = ctx ? new Chart(ctx, baseChartOpts) : null;
   const briquetteChart = briquetteCtx ? new Chart(briquetteCtx, baseChartOpts) : null;
 
-  // ===== Tables (with mini trend bars) =====
+  // ===== Mini-trend bars =====
   function trendBars(arr, color = '#52b788') {
-    // Normalize heights a bit so small values still show a bar
     const nums = arr.map(n => Number(n) || 0);
     const min = Math.min(...nums);
     const max = Math.max(...nums);
@@ -106,30 +105,70 @@ document.addEventListener("DOMContentLoaded", async () => {
     }).join('');
   }
 
+  // ===== Show All/Show Less state =====
+  let showAllPellets = false;
+  let showAllBriquettes = false;
+  const ROW_LIMIT = 2;
+
+  function buildRows(entries, limit, color) {
+    return entries.slice(0, limit).map(([type, { price, trend }]) => `
+      <tr>
+        <td>${type}</td>
+        <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
+        <td>${trendBars(trend, color)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function addOrUpdateToggleBtn(parentEl, isPellet, total, showingAll, onToggle) {
+    // remove any existing toggle in this card
+    const old = parentEl.querySelector('.show-toggle');
+    if (old) old.remove();
+    if (total <= ROW_LIMIT) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'btn ghost show-toggle';
+    btn.style.margin = '10px 0 0';
+    btn.textContent = showingAll ? 'Show Less' : `Show All (${total})`;
+    btn.addEventListener('click', onToggle);
+    parentEl.appendChild(btn);
+  }
+
+  // ===== Tables (with toggles) =====
   function renderTable(locationKey) {
     const data = dataset[locationKey]?.materials?.pellets || {};
+    const entries = Object.entries(data);
+    const limit = showAllPellets ? entries.length : ROW_LIMIT;
+
     materialTable.innerHTML =
       `<tr><th>Pellet Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
-      Object.entries(data).map(([type, { price, trend }]) => `
-        <tr>
-          <td>${type}</td>
-          <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
-          <td>${trendBars(trend, '#2FA66A')}</td>
-        </tr>
-      `).join('');
+      buildRows(entries, limit, '#2FA66A');
+
+    addOrUpdateToggleBtn(
+      materialTable.parentElement,
+      true,
+      entries.length,
+      showAllPellets,
+      () => { showAllPellets = !showAllPellets; renderTable(locationKey); }
+    );
   }
 
   function renderBriquetteTable(locationKey) {
     const data = dataset[locationKey]?.materials?.briquettes || {};
+    const entries = Object.entries(data);
+    const limit = showAllBriquettes ? entries.length : ROW_LIMIT;
+
     briquetteTable.innerHTML =
       `<tr><th>Briquette Type</th><th>Price (₹/ton)</th><th>Last 4 Trend</th></tr>` +
-      Object.entries(data).map(([type, { price, trend }]) => `
-        <tr>
-          <td>${type}</td>
-          <td><strong>₹${Number(price).toLocaleString('en-IN')}</strong></td>
-          <td>${trendBars(trend, '#3B7A57')}</td>
-        </tr>
-      `).join('');
+      buildRows(entries, limit, '#3B7A57');
+
+    addOrUpdateToggleBtn(
+      briquetteTable.parentElement,
+      false,
+      entries.length,
+      showAllBriquettes,
+      () => { showAllBriquettes = !showAllBriquettes; renderBriquetteTable(locationKey); }
+    );
   }
 
   function updateChart(locationKey, type, chartObj, isPellet = true) {
@@ -190,6 +229,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===== One-shot refresh =====
   function refreshAll() {
     const loc = locationSelect.value;
+
+    // reset toggles on location change
+    showAllPellets = false;
+    showAllBriquettes = false;
+
     updateMaterialDropdowns(loc);
     renderTable(loc);
     renderBriquetteTable(loc);
